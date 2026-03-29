@@ -35,8 +35,8 @@ Every algorithm needs to define a **Trader** Object, and a **run()** function wi
 - Imports
   - OrderDepth - Essentially holds two dictionaries, a buy_orders dictionary for bids, and a sell_orders dictionary for asks
   - UserID - Used to identify who made what trade (I suspect something similar to Olivia last year for squid ink)
-  - TradingState - [link](##tradingstate-object)
-  - Order - [link](##order-object)
+  - TradingState - [link](#tradingstate-object)
+  - Order - [link](#order-object)
 
 - run()
   - The **Trader.run()** function takes a **TradingState** Object (really a glorified list) and returns:
