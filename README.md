@@ -2,7 +2,7 @@
 
 # Background
 
-<img width="318" height="159" alt="image" src="https://github.com/user-attachments/assets/222dc82c-3074-4e65-855e-97875cc5a4c1" />
+<img width="1000" alt="image" src="https://github.com/user-attachments/assets/222dc82c-3074-4e65-855e-97875cc5a4c1" />
 
 Hello! My name is Wenda Wu, and I am a first year at Imperial College London studying Mathematics (How exciting!)
 
