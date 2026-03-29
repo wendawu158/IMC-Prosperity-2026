@@ -51,13 +51,20 @@ For later rounds, apparently a **Trader.bid()** function is also necessary to de
 
 This is the input of your function, and it has these parameters
 
-- traderData
+- traderData - string
   - This is your memory. This string is passed from the previous Trader.run()
-- timestamp
+- timestamp - time
   - What time is it? This gives us the time
 - listings
-  - 
+  - Gives us a dictionary, keys being strings (of tickers) and values being [Listing Objects](#listing-objects)
 
 ## Order Object
 
 This is one of the components of the output of your function, and it has these parameters
+
+## Listing Objects
+
+Each listing object has three parameters:
+- A symbol string
+- A product string
+- A denomination string (the currency of the listing)
