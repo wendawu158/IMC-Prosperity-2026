@@ -26,6 +26,8 @@ So, like any good data analyst, you need to be able to visualise the data.
 
 I decided to program my own. You can find it as the "Dashboard.py" file. It takes .csv files from the folder named Data and spits out a visualisation of what's going on. Pretty simple.
 
+## Features
+
 # Basics of Implementation
 
 So I started with the documentation, trying to understand how I would have to code my algorithms first.
@@ -62,8 +64,10 @@ This is the input of your function, and it has these parameters
 
 - traderData - string
   - This is your memory. This string is passed from the previous Trader.run()
-- timestamp - time
-  - What time is it? This gives us the time
+- timestamp - integer
+  - What time is it? This gives us the current timestamp we are trading on
+  - Importantly, there is no latency for trading
+    - I.e. You trade on the current orderbook 
 - listings
   - Gives us a dictionary
     - Keys being strings (of tickers)
