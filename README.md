@@ -85,7 +85,7 @@ This is the input of your function, and it has these parameters
     - Keys being strings (of symbols)
     - Values being lists of [Trade Objects](#trade-objects)
 - position
-  - 
+  - How much of each ticker you have. Tells you your current inventory
 
 ## Order Object
 
