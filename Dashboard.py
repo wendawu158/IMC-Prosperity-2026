@@ -11,7 +11,6 @@ import matplotlib.ticker as ticker
 
 
 # Global Variables
-
 ticker_column_names = ("product", "symbol")
 
 
@@ -22,7 +21,11 @@ class OrderBookApp(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        self.wm_title("Order Book Visualiser")
+
+        # Sets the title
+        self.wm_title("Dashboard")
+
+        # Makes sure that everything closes when the window is closed
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # Initialise Core Components
@@ -35,7 +38,7 @@ class OrderBookApp(tk.Tk):
 
     def on_closing(self):
         """
-        Safely shuts down matplotlib and the tkinter window
+        Shuts down matplotlib and the tkinter window
         """
         plt.close('all')
         self.destroy()
@@ -43,7 +46,7 @@ class OrderBookApp(tk.Tk):
 
 class GraphArea(tk.Frame):
     """
-    Encapsulates the Matplotlib figure, canvas, and toolbar.
+    Encapsulates the Matplotlib figure, canvas, and toolbar
     """
 
     def __init__(self, parent):
@@ -77,7 +80,17 @@ class GraphArea(tk.Frame):
         self.mouse_motion_subscribers = []
 
     def on_mouse_motion(self, event):
-        """Handles cursor visibility and broadcasts mouse coordinates."""
+        """
+        Handles cursor visibility and broadcasts mouse coordinates to other elements
+        """
+
+        # Notify subscribers (like the Statistics Tab)
+        for callback in self.mouse_motion_subscribers:
+            callback(event)
+
+        # Cursor visibility
+        # Ignore if panning
+        # Weird bug happens if we don't ignore if panning
         if self.toolbar.mode != '':
             return
 
@@ -86,9 +99,6 @@ class GraphArea(tk.Frame):
         else:
             self.canvas.get_tk_widget().config(cursor="arrow")
 
-        # Notify subscribers (like the Statistics Tab)
-        for callback in self.mouse_motion_subscribers:
-            callback(event)
 
     def on_xlims_change(self, event):
         # Get the current view range
@@ -210,6 +220,9 @@ class GraphArea(tk.Frame):
 
         # Redraw canvas to autoscale axes to the new data
         self.canvas.draw()
+
+    def annotate(self):
+        pass
 
 
 class VerticalNavigationToolbar2Tk(NavigationToolbar2Tk):
@@ -415,6 +428,7 @@ class StatisticsTab(tk.Frame):
     def __init__(self, parent, graph_area):
         super().__init__(parent, relief=tk.RAISED)
 
+        # X and Y position
         self.label_x = tk.Label(self, text="x: ")
         self.label_y = tk.Label(self, text="y: ")
 
