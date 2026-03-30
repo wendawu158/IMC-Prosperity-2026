@@ -4,9 +4,7 @@
 
 <img width="1000" alt="image" src="https://github.com/user-attachments/assets/222dc82c-3074-4e65-855e-97875cc5a4c1" />
 
-So, you wanna
-
-My name is Wenda Wu, and I am a first year at Imperial College London studying Mathematics (How exciting!). 
+Hello! My name is Wenda Wu, and I am a first year at Imperial College London studying Mathematics (How exciting!). 
 I'll be working with [Abiola Abidoye](https://www.linkedin.com/in/abiola-abidoye/), who is also a first year at Imperial College London.
 
 Here is our code for the Prosperity Challenge! 
@@ -16,6 +14,10 @@ I'll be uploading all of our code here for you to steal (if you want, I don't re
 and I'll try to explain my processes a little, mainly for our benefit.
 
 Think of this repo as a dummy's guide to IMC Prosperity 4 (because it's written by an actual dummy)
+
+<img width="1000" alt="image" src="https://github.com/user-attachments/assets/9906eb78-3d7e-462d-9306-5a6e4e118345" />
+
+> A rare photo of the owner of this repository
 
 Also, thanks to [Utkarsh Jetly](https://www.linkedin.com/in/utkarsh-jetly/) [@theycallmejetly](https://www.instagram.com/theycallmejetly/) for helping me with some (most) of this
 
