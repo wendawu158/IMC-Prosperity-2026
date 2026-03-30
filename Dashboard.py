@@ -154,6 +154,8 @@ class GraphArea(tk.Frame):
             spacing = 5
         elif view_width <= 200:
             spacing = 10
+        else:
+            spacing = 20
 
         # Apply the new scale
         event.yaxis.set_major_locator(ticker.MultipleLocator(spacing))
