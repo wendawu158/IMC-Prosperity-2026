@@ -74,27 +74,29 @@ class Trader:
         return orders, conversions, traderData
 ```
 
-- bid()
-  - A function that does not yet have any use
-  - Further details will be released in round 2
-  - The function will only be used in round 2
+bid():
 
-- run()
-  - Inputs:
-    - A [TradingState Object](#tradingstate-object)
-  - Outputs:
-    - orders: A dictionary
-      - Keys being strings (of tickers)
-      - Values being a list of **Order** Objects
-    - conversions: 
-      - How many units to convert for products/rounds where conversion mechanics exist
-      - Apparently this year we aren't using this mechanic. Big Sadge
-    - traderData: What you want to send to the next timestamp (this is passed to TradingState.tradeData)
-      - This is used for memory as class and global variables are not kept between trades due to the implementation
-      - Hard limit of 50000 characters (would be very surprised if anyone actually reached that)
-  - run() is run every single timestamp (and can only run for 900ms, so nothing fancy)
-  - Submission identifiers are generated for every submission, and a Run identifier is generated for every run
-    - Useful for bug squashing
+- A function that does not yet have any use
+- Further details will be released in round 2
+- The function will only be used in round 2
+
+run():
+
+- Inputs:
+- A [TradingState Object](#tradingstate-object)
+- Outputs:
+- orders: A dictionary
+  - Keys being strings (of tickers)
+  - Values being a list of **Order** Objects
+- conversions: 
+  - How many units to convert for products/rounds where conversion mechanics exist
+  - Apparently this year we aren't using this mechanic. Big Sadge
+- traderData: What you want to send to the next timestamp (this is passed to TradingState.tradeData)
+  - This is used for memory as class and global variables are not kept between trades due to the implementation
+  - Hard limit of 50000 characters (would be very surprised if anyone actually reached that)
+- run() is run every single timestamp (and can only run for 900ms, so nothing fancy)
+- Submission identifiers are generated for every submission, and a Run identifier is generated for every run
+- Useful for bug squashing
 
 ## TradingState Object
 
