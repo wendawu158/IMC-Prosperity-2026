@@ -191,7 +191,7 @@ class GraphArea(tk.Frame):
             "ask_price_3":      ("v", "#50ff50"),
             "ask_price_2":      ("v", "#20ff20"),
             "ask_price_1":      ("v", "#00ff00"),
-            "mid_price":        (".", "#000000"),
+            # "mid_price":        (".", "#000000"),
             "bid_price_1":      ("^", "#ff0000"),
             "bid_price_2":      ("^", "#ff2020"),
             "bid_price_3":      ("^", "#ff5050"),
