@@ -7,18 +7,25 @@ class Trader:
         pass
 
     def run(self, state: TradingState):
+        """
+        Overarching algorithm
+        """
+
+        # Output variables initialising
+        self.orders = dict()
+        self.output_trader_data = []
+
+        self.emerald(state)
+
+        return self.orders, 0, self.output_trader_data
+
+    def emerald(self, state: TradingState):
+        """
+        Trading algorithm specifically for Emeralds
+        """
+
         # True price for Emeralds
         EMERALD_PRICE = 10000
 
-        # Output variables initialising
-        orders = dict()
-        output_trader_data = ""
-
-        input_trader_data = state.traderData
-        order_depths = state.order_depths
-        own_trades = state.own_trades
-        market_trades = state.market_trades
-        position = state.position
 
 
-        return orders, 0, output_trader_data
