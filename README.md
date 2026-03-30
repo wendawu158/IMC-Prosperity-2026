@@ -138,9 +138,10 @@ This is the input of your function, and it has these variables:
   - Importantly, there is no latency for trading
     - I.e. You trade on the current orderbook, not the next one
 - listings
-  - Gives us a dictionary
+  - What listings are available on the exchange. Gives us a dictionary
     - Keys being strings (of tickers)
     - Values being [Listing Objects](#listing-object)
+  - Importantly, each product can have many listings, but each listing can only have one product
 - order-depths
   - The current order book for every ticker. Gives us a dictionary
     - Keys being strings (of tickers)
@@ -307,5 +308,6 @@ Each product has a position limit
 We can only hold so much of either a long (having the product) or a short (owing the product), 
 which are defined by the position limit
 
+Orders that would take us over the position limit are automatically cancelled
 
 
