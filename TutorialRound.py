@@ -1,6 +1,4 @@
-from datamodel import OrderDepth, UserId, TradingState, Order
-from typing import List
-import string
+from datamodel import *
 
 
 class Trader:
@@ -13,7 +11,6 @@ class Trader:
         symbols as an input, and outputs a list of orders to be sent."""
 
         print("traderData: " + state.traderData)
-        print("Observations: " + str(state.observations))
 
         # Orders to be placed on exchange matching engine
         result = {}
@@ -44,5 +41,5 @@ class Trader:
         traderData = "SAMPLE"
 
         # Sample conversion request. Check more details below.
-        conversions = 1
+        conversions = 0
         return result, conversions, traderData
