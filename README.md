@@ -33,15 +33,18 @@ Here is a breakdown of all the components of implementation
 Every algorithm needs to define a **Trader** Object, and a **run()** function within that Object.
 
 - Imports
-  - OrderDepth - Essentially holds two dictionaries, a buy_orders dictionary for bids, and a sell_orders dictionary for asks
+  - OrderDepth - The [OrderDepth Object](#orderdepth-object)
   - UserID - Used to identify who made what trade (I suspect something similar to Olivia last year for squid ink)
-  - TradingState - [link](#tradingstate-object)
-  - Order - [link](#order-object)
+  - TradingState - The main input, which is a [TradingState Object](#tradingstate-object)
+  - Order - The [Order Object](#order-object)
 
 - run()
   - The **Trader.run()** function takes a **TradingState** Object (really a glorified list) and returns:
-    - result: A dictionary, keys being the ticker, and values being a list of **Order** Objects
+    - result: A dictionary
+      - Keys being strings (of tickers)
+      - Values being a list of **Order** Objects
     - conversions: How many units to convert for products/rounds where conversion mechanics exist
+      - Apparently this year we aren't using this mechanic. Big Sadge
     - traderData: What you want to send to the next timestamp
   - The **Trader.run()** function is run every single timestamp (and can only run for 100ms, so nothing fancy)
 
@@ -56,13 +59,31 @@ This is the input of your function, and it has these parameters
 - timestamp - time
   - What time is it? This gives us the time
 - listings
-  - Gives us a dictionary, keys being strings (of tickers) and values being [Listing Objects](#listing-objects)
+  - Gives us a dictionary
+    - Keys being strings (of tickers)
+    - Values being [Listing Objects](#listing-objectss)
 - order-depths
-  - 
+  - The current order book for every ticker. Gives us a dictionary
+    - Keys being strings (of tickers)
+    - Values being an [OrderDepth Objects](#orderdepth-objects)
+- own_trades
+  - Trades that you have executed. Gives us a dictionary
+    - Keys being strings (of symbols)
+    - Values being lists of [Trade Objects](#trade-objects)
+-
 
 ## Order Object
 
 This is one of the components of the output of your function, and it has these parameters
+
+## Trade Object
+
+## OrderDepth Object
+Each OrderDepth object is two dictionaries:
+- One is buy_orders, listing bids, one is sell_orders, listing asks.
+- Keys being ints (of prices)
+- Values being ints (of number of orders at that price)
+- Important to notes that bids are positive and asks are negative
 
 ## Listing Objects
 
