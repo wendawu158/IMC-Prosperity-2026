@@ -40,25 +40,78 @@ Here is a breakdown of all the components of implementation
 
 Every algorithm needs to define a **Trader** Object, and a **run()** function within that Object.
 
-- Imports
-  - OrderDepth - The [OrderDepth Object](#orderdepth-object)
-  - UserID - Used to identify who made what trade (I suspect something similar to Olivia last year for squid ink)
-  - TradingState - The main input, which is a [TradingState Object](#tradingstate-object)
-  - Order - The [Order Object](#order-object)
+```python
+from datamodel import *
+
+class Trader:
+
+    def bid(self):
+        pass
+    
+    def run(self, state: TradingState):
+        orders = {}         # Keys are symbols, Values are Orders
+        conversions = 0     # Allegedly unused
+        traderData = ""     # Memory for next iteration
+        
+        """
+        Your trading algorithm goes here
+        """
+        
+        return orders, conversions, traderData
+```
+
+- bid()
+  - A function that does not yet have any use
+  - Further details will be released in round 2
+  - The function will only be used in round 2
 
 - run()
-  - The **Trader.run()** function takes for input a **TradingState** Object (really a glorified list) and returns:
-    - result: A dictionary
+  - Inputs:
+    - A [TradingState Object](#tradingstate-object)
+  - Outputs:
+    - orders: A dictionary
       - Keys being strings (of tickers)
       - Values being a list of **Order** Objects
-    - conversions: How many units to convert for products/rounds where conversion mechanics exist
+    - conversions: 
+      - How many units to convert for products/rounds where conversion mechanics exist
       - Apparently this year we aren't using this mechanic. Big Sadge
-    - traderData: What you want to send to the next timestamp (this is passed to TradingState.tradrData
-  - The **Trader.run()** function is run every single timestamp (and can only run for 100ms, so nothing fancy)
-
-For later rounds, apparently a **Trader.bid()** function is also necessary to define, but I'll get to that when more information comes out.
+    - traderData: What you want to send to the next timestamp (this is passed to TradingState.tradeData)
+      - This is used for memory as class and global variables are not kept between trades due to the implementation
+      - Hard limit of 50000 characters (would be very surprised if anyone actually reached that)
+  - run() is run every single timestamp (and can only run for 100ms, so nothing fancy)
+  - Submission identifiers are generated for every submission, and a Run identifier is generated for every run
+    - Useful for bug squashing
 
 ## TradingState Object
+
+```python
+Time = int
+Symbol = str
+Product = str
+Position = int
+
+class TradingState(object):
+   def __init__(self,
+                 traderData: str,
+                 timestamp: Time,
+                 listings: Dict[Symbol, Listing],
+                 order_depths: Dict[Symbol, OrderDepth],
+                 own_trades: Dict[Symbol, List[Trade]],
+                 market_trades: Dict[Symbol, List[Trade]],
+                 position: Dict[Product, Position],
+                 observations: Observation):
+        self.traderData = traderData
+        self.timestamp = timestamp
+        self.listings = listings
+        self.order_depths = order_depths
+        self.own_trades = own_trades
+        self.market_trades = market_trades
+        self.position = position
+        self.observations = observations
+        
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
+```
 
 This is the input of your function, and it has these parameters
 
@@ -67,42 +120,86 @@ This is the input of your function, and it has these parameters
 - timestamp - integer
   - What time is it? This gives us the current timestamp we are trading on
   - Importantly, there is no latency for trading
-    - I.e. You trade on the current orderbook 
+    - I.e. You trade on the current orderbook, not the next one
 - listings
   - Gives us a dictionary
     - Keys being strings (of tickers)
-    - Values being [Listing Objects](#listing-objectss)
+    - Values being [Listing Objects](#listing-object)
 - order-depths
   - The current order book for every ticker. Gives us a dictionary
     - Keys being strings (of tickers)
-    - Values being an [OrderDepth Objects](#orderdepth-objects)
+    - Values being an [OrderDepth Objects](#orderdepth-object)
 - own_trades
   - Trades that you have executed. Gives us a dictionary
     - Keys being strings (of symbols)
-    - Values being lists of [Trade Objects](#trade-objects)
+    - Values being lists of [Trade Objects](#trade-object)
 - market_trades
   - Trades that have been executed by the market. Gives us a dictionary
     - Keys being strings (of symbols)
-    - Values being lists of [Trade Objects](#trade-objects)
+    - Values being lists of [Trade Objects](#trade-object)
 - position
   - How much of each ticker you have. Tells you your current inventory
+    - Keys being integers (of prices)
+    - Values being integers (of number of limit orders at that price)
+      - It is important to note that:
+      - Buy limit orders (bids) are positive
+      - Sell limit orders (asks) are negative
+      - I.E. if there are 5 bids @ 10 and 6 asks @ 11, then the position dictionary would be {10: 5, 11: -6}
+    - This object will be used to make sure you aren't breaching [position limits](#position-limits)
 
-## Order Object
+## Listing Object
 
-This is one of the components of the output of your function, and it has these parameters
+```python
+class Listing:
 
-## Trade Object
-
-## OrderDepth Object
-Each OrderDepth object is two dictionaries:
-- One is buy_orders, listing bids, one is sell_orders, listing asks.
-- Keys being ints (of prices)
-- Values being ints (of number of orders at that price)
-- Important to notes that bids are positive and asks are negative
-
-## Listing Objects
+    def __init__(self, symbol: Symbol, product: Product, denomination: Product):
+        self.symbol = symbol
+        self.product = product
+        self.denomination = denomination
+```
 
 Each listing object has three parameters:
 - A symbol string
 - A product string
 - A denomination string (the currency of the listing)
+
+This object is likely used for metadata about the exchange
+
+(e.g, a product having multiple symbols in different currencies)
+
+I suspect that this is indicative of multiple currencies being introduced
+
+Last year, there was a manual trading round involving simple currency arbitrage,
+and I suspect this year we will have the opportunity to trade with multiple currencies
+
+## OrderDepth Object
+
+```python
+class OrderDepth:
+
+    def __init__(self):
+        self.buy_orders: Dict[int, int] = {}
+        self.sell_orders: Dict[int, int] = {}
+```
+
+Each OrderDepth object is two dictionaries:
+
+- One is buy_orders, listing bids, one is sell_orders, listing asks.
+- Keys being ints (of prices)
+- Values being ints (of number of orders at that price)
+- Important to notes that bids are positive and asks are negative
+
+## Trade Object
+
+This Object is used to tell us about previous trades that have happened.
+
+In the TradingState Object, we will only see trades that happened in the 
+
+
+## Order Object
+
+This is one of the components of the output of your function, and it has these parameters
+
+
+
+
