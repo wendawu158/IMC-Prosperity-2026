@@ -17,7 +17,7 @@ class Trader:
         for product in state.order_depths:
             order_depth: OrderDepth = state.order_depths[product]
             orders: List[Order] = []
-            acceptable_price = 10  # Participant should calculate this value
+            acceptable_price = 10000  # Participant should calculate this value
             print("Acceptable price : " + str(acceptable_price))
             print("Buy Order depth : " + str(len(order_depth.buy_orders)) + ", Sell order depth : " + str(
                 len(order_depth.sell_orders)))

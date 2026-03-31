@@ -188,20 +188,25 @@ class GraphArea(tk.Frame):
             return
 
         plotConfig = {
-            "ask_price_3":      ("v", "#50ff50"),
-            "ask_price_2":      ("v", "#20ff20"),
-            "ask_price_1":      ("v", "#00ff00"),
-            # "mid_price":        (".", "#000000"),
-            "bid_price_1":      ("^", "#ff0000"),
-            "bid_price_2":      ("^", "#ff2020"),
-            "bid_price_3":      ("^", "#ff5050"),
-            "price":            ("X", "#cc5500")
+            "ask_price_3":      ("v", "#50ff50", 5),
+            "ask_price_2":      ("v", "#20ff20", 5),
+            "ask_price_1":      ("v", "#00ff00", 8),
+            # "mid_price":        (".", "#000000", 10),
+            "bid_price_1":      ("^", "#ff0000", 8),
+            "bid_price_2":      ("^", "#ff2020", 5),
+            "bid_price_3":      ("^", "#ff5050", 5),
+            "price":            ("x", "#cc5500", 13)
         }
 
         # Plot new data
         for column in list(TRADE_DATA):
             if column in plotConfig.keys():
-                self.ax.plot(TRADE_DATA.index, TRADE_DATA[column], plotConfig[column][0], color=plotConfig[column][1])
+                self.ax.plot(TRADE_DATA.index,
+                                TRADE_DATA[column],
+                                plotConfig[column][0],
+                                color=plotConfig[column][1],
+                                markersize=plotConfig[column][2]
+                                )
 
     def finish_plot(self):
         # Tickers
