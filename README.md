@@ -4,9 +4,7 @@
 
 <img width="1000" alt="image" src="https://github.com/user-attachments/assets/222dc82c-3074-4e65-855e-97875cc5a4c1" />
 
-So, you wanna
-
-My name is Wenda Wu, and I am a first year at Imperial College London studying Mathematics (How exciting!). 
+Hello! My name is Wenda Wu, and I am a first year at Imperial College London studying Mathematics (How exciting!). 
 I'll be working with [Abiola Abidoye](https://www.linkedin.com/in/abiola-abidoye/), who is also a first year at Imperial College London.
 
 Here is our code for the Prosperity Challenge! 
@@ -16,6 +14,10 @@ I'll be uploading all of our code here for you to steal (if you want, I don't re
 and I'll try to explain my processes a little, mainly for our benefit.
 
 Think of this repo as a dummy's guide to IMC Prosperity 4 (because it's written by an actual dummy)
+
+<img width="1000" alt="image" src="https://github.com/user-attachments/assets/9906eb78-3d7e-462d-9306-5a6e4e118345" />
+
+> A rare photo of the owner of this repository
 
 Also, thanks to [Utkarsh Jetly](https://www.linkedin.com/in/utkarsh-jetly/) [@theycallmejetly](https://www.instagram.com/theycallmejetly/) for helping me with some (most) of this
 
@@ -72,27 +74,29 @@ class Trader:
         return orders, conversions, traderData
 ```
 
-- bid()
-  - A function that does not yet have any use
-  - Further details will be released in round 2
-  - The function will only be used in round 2
+bid():
 
-- run()
-  - Inputs:
-    - A [TradingState Object](#tradingstate-object)
-  - Outputs:
-    - orders: A dictionary
-      - Keys being strings (of tickers)
-      - Values being a list of **Order** Objects
-    - conversions: 
-      - How many units to convert for products/rounds where conversion mechanics exist
-      - Apparently this year we aren't using this mechanic. Big Sadge
-    - traderData: What you want to send to the next timestamp (this is passed to TradingState.tradeData)
-      - This is used for memory as class and global variables are not kept between trades due to the implementation
-      - Hard limit of 50000 characters (would be very surprised if anyone actually reached that)
-  - run() is run every single timestamp (and can only run for 900ms, so nothing fancy)
-  - Submission identifiers are generated for every submission, and a Run identifier is generated for every run
-    - Useful for bug squashing
+- A function that does not yet have any use
+- Further details will be released in round 2
+- The function will only be used in round 2
+
+run():
+
+- Inputs:
+- A [TradingState Object](#tradingstate-object)
+- Outputs:
+- orders: A dictionary
+  - Keys being strings (of tickers)
+  - Values being a list of **Order** Objects
+- conversions: 
+  - How many units to convert for products/rounds where conversion mechanics exist
+  - Apparently this year we aren't using this mechanic. Big Sadge
+- traderData: What you want to send to the next timestamp (this is passed to TradingState.tradeData)
+  - This is used for memory as class and global variables are not kept between trades due to the implementation
+  - Hard limit of 50000 characters (would be very surprised if anyone actually reached that)
+- run() is run every single timestamp (and can only run for 900ms, so nothing fancy)
+- Submission identifiers are generated for every submission, and a Run identifier is generated for every run
+- Useful for bug squashing
 
 ## TradingState Object
 
@@ -134,9 +138,10 @@ This is the input of your function, and it has these variables:
   - Importantly, there is no latency for trading
     - I.e. You trade on the current orderbook, not the next one
 - listings
-  - Gives us a dictionary
+  - What listings are available on the exchange. Gives us a dictionary
     - Keys being strings (of tickers)
     - Values being [Listing Objects](#listing-object)
+  - Importantly, each product can have many listings, but each listing can only have one product
 - order-depths
   - The current order book for every ticker. Gives us a dictionary
     - Keys being strings (of tickers)
@@ -303,5 +308,6 @@ Each product has a position limit
 We can only hold so much of either a long (having the product) or a short (owing the product), 
 which are defined by the position limit
 
+Orders that would take us over the position limit are automatically cancelled
 
 
