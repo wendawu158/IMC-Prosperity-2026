@@ -22,6 +22,7 @@ class Trader:
 
         return self.orders, 0, self.traderData
 
+    # Finished
     def emerald(self):
         """
         Trading algorithm specifically for Emeralds
@@ -46,14 +47,15 @@ class Trader:
         best_ask = EMERALDS_STABLE_ASK
         best_bid = EMERALDS_STABLE_BID
 
+        position_emerald = 0
+
         # How many emeralds are we holding?
         try:
             position_emerald = self.state.position[EMERALDS]
         except KeyError:
-            position_emerald = 0
+            pass
 
         # Check for immediately profitable trades
-        # We also want to take fair trades, so that the bots can't take them and must trade with us
         if len(bids_emerald.keys()) != 0:
             for bid in bids_emerald.keys():
                 if bid > EMERALDS_TRUE_PRICE:
@@ -91,21 +93,29 @@ class Trader:
         )
 
         # Rebalance our inventory, if we are out of balance
-        if position_emerald > 0 and bids_emerald[EMERALDS_TRUE_PRICE]:
+        if position_emerald > 20 and bids_emerald.get(EMERALDS_TRUE_PRICE, 0) > 0:
 
             self.orders[EMERALDS].append(
                 Order(EMERALDS, EMERALDS_TRUE_PRICE,
-                      -1 * min(position_emerald, bids_emerald[EMERALDS_TRUE_PRICE])
+                      -1 * bids_emerald.get(EMERALDS_TRUE_PRICE)
                       )  # We don't wanna over correct
             )
 
-        elif position_emerald < 0 and asks_emerald[EMERALDS_TRUE_PRICE]:
+        elif position_emerald < 20 and asks_emerald.get(EMERALDS_TRUE_PRICE, 0) > 0:
 
             self.orders[EMERALDS].append(
                 Order(EMERALDS, EMERALDS_TRUE_PRICE,
-                      -1 * max(position_emerald, asks_emerald[EMERALDS_TRUE_PRICE])
+                      -1 * asks_emerald.get(EMERALDS_TRUE_PRICE)
                       )  # We don't wanna over correct
             )
+
+    def tomato(self):
+        """
+        Trading algorithm specifically for tomatoes
+        """
+
+        # Tomatoes
+        TOMATOES = "TOMATOES"
 
 
 

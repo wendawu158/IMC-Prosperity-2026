@@ -42,6 +42,15 @@ and spits out a visualisation of what's going on. Pretty simple.
 
 ## Features
 
+### Backdata Graph
+
+Able to graph the prices and trades .csv files from IMC Prosperity, with specific ticker selection
+
+Key: 
+- Green down triangles are asks (best ask is slightly bigger)
+- Red up triangles are bids (best bid is slightly bigger)
+- Orange crosses are trades
+
 # Objects
 
 So I started with the documentation, trying to understand how I would have to code my algorithms first.
@@ -276,12 +285,6 @@ Each Order object has these variables:
 - A quantity integer: how much? (Positive is buy, negative is sell)
 
 
-
-
-
-
-
-
 # Mechanics
 
 ## Trade Execution
@@ -311,3 +314,8 @@ which are defined by the position limit
 Orders that would take us over the position limit are automatically cancelled
 
 
+# Rounds
+
+## Round 0
+
+Before the real competition began, there were 

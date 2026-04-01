@@ -195,7 +195,7 @@ class GraphArea(tk.Frame):
             "bid_price_1":      ("^", "#ff0000", 8),
             "bid_price_2":      ("^", "#ff2020", 5),
             "bid_price_3":      ("^", "#ff5050", 5),
-            "price":            ("x", "#cc5500", 13)
+            "price":            ("X", "#cc5500", 6.5)
         }
 
         # Plot new data
