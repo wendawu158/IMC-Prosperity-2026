@@ -11,15 +11,18 @@ class Trader:
         Overarching algorithm
         """
 
+        # Capture to a variable
+        self.state = state
+
         # Output variables initialising
         self.orders: Dict[Symbol, List[Order]] = dict()
-        self.output_trader_data: List[str] = [""]
+        self.traderData = ""
 
-        self.emerald(state)
+        self.emerald()
 
-        return self.orders, 0, "".join(self.output_trader_data)
+        return self.orders, 0, self.traderData
 
-    def emerald(self, state: TradingState):
+    def emerald(self):
         """
         Trading algorithm specifically for Emeralds
         """
@@ -35,25 +38,33 @@ class Trader:
         EMERALDS_STABLE_BID = 9992
 
         # Useful information from the TradingState
-        orders_emerald = self.orders[EMERALDS]  # Note that this is a reference, not a copy
-        bids_emerald = state.order_depths[EMERALDS].buy_orders
-        asks_emerald = state.order_depths[EMERALDS].sell_orders
-        position_emerald = state.position[EMERALDS]
+        self.orders[EMERALDS] = list()
+        bids_emerald = self.state.order_depths[EMERALDS].buy_orders
+        asks_emerald = self.state.order_depths[EMERALDS].sell_orders
+        try:
+            position_emerald = self.state.position[EMERALDS]
+        except KeyError:
+            position_emerald = 0
 
         # Check for immediately profitable trades
+        # We also want to take fair trades, so that the bots can't take them and must trade with us
         if len(bids_emerald.keys()) != 0:
             for bid in bids_emerald.keys():
-                if bid > EMERALDS_PRICE:
-                    orders_emerald.append(
+                if bid >= EMERALDS_PRICE:
+                    self.orders[EMERALDS].append(
                         Order(EMERALDS, bid, -1 * bids_emerald[bid])
                     )   # Here we are placing a sell to any bid above the fair price
 
         if len(asks_emerald.keys()) != 0:
             for ask in asks_emerald.keys():
-                if ask < EMERALDS_PRICE:
-                    orders_emerald.append(
+                if ask <= EMERALDS_PRICE:
+                    self.orders[EMERALDS].append(
                         Order(EMERALDS, ask, -1 * asks_emerald[ask])
                     )   # Here we are placing a buy to any ask below the fair price
+
+
+
+
 
 
 
