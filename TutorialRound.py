@@ -56,7 +56,7 @@ class Trader:
         # We also want to take fair trades, so that the bots can't take them and must trade with us
         if len(bids_emerald.keys()) != 0:
             for bid in bids_emerald.keys():
-                if bid >= EMERALDS_TRUE_PRICE:
+                if bid > EMERALDS_TRUE_PRICE:
                     self.orders[EMERALDS].append(
                         Order(EMERALDS, bid, -1 * bids_emerald[bid])
                     )   # Here we are placing a sell to any bid above the fair price
@@ -65,7 +65,7 @@ class Trader:
 
         if len(asks_emerald.keys()) != 0:
             for ask in asks_emerald.keys():
-                if ask <= EMERALDS_TRUE_PRICE:
+                if ask < EMERALDS_TRUE_PRICE:
                     self.orders[EMERALDS].append(
                         Order(EMERALDS, ask, -1 * asks_emerald[ask])
                     )   # Here we are placing a buy to any ask below the fair price
@@ -84,11 +84,28 @@ class Trader:
             best_bid = EMERALDS_TRUE_PRICE
 
         self.orders[EMERALDS].append(
-            Order(EMERALDS, best_bid, 80)
+            Order(EMERALDS, best_bid, 40)
         )
         self.orders[EMERALDS].append(
-            Order(EMERALDS, best_ask, -80)
+            Order(EMERALDS, best_ask, -40)
         )
+
+        # Rebalance our inventory, if we are out of balance
+        if position_emerald > 0 and bids_emerald[EMERALDS_TRUE_PRICE]:
+
+            self.orders[EMERALDS].append(
+                Order(EMERALDS, EMERALDS_TRUE_PRICE,
+                      -1 * min(position_emerald, bids_emerald[EMERALDS_TRUE_PRICE])
+                      )  # We don't wanna over correct
+            )
+
+        elif position_emerald < 0 and asks_emerald[EMERALDS_TRUE_PRICE]:
+
+            self.orders[EMERALDS].append(
+                Order(EMERALDS, EMERALDS_TRUE_PRICE,
+                      -1 * max(position_emerald, asks_emerald[EMERALDS_TRUE_PRICE])
+                      )  # We don't wanna over correct
+            )
 
 
 
