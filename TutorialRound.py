@@ -117,7 +117,9 @@ class Trader:
         # Tomatoes
         TOMATOES = "TOMATOES"
 
-
+        # Market making
+        best_ask = sorted(self.state.order_depths[TOMATOES].sell_orders.keys())[0]
+        best_bid = sorted(self.state.order_depths[TOMATOES].buy_orders.keys())[-1]
 
 
 

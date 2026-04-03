@@ -9,7 +9,6 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 from matplotlib.widgets import Cursor
 import matplotlib.ticker as ticker
 
-
 # Global Variables
 ticker_column_names = ("product", "symbol")
 
@@ -78,6 +77,9 @@ class GraphArea(tk.Frame):
 
         # Allow other objects to subscribe to mouse movement
         self.mouse_motion_subscribers = []
+
+        # Track active data for the order book visualizer
+        self.active_data = None
 
     def on_mouse_motion(self, event):
         """
@@ -165,7 +167,10 @@ class GraphArea(tk.Frame):
             event.yaxis.set_minor_locator(ticker.MultipleLocator(spacing // 2))
 
     def plot_order_book(self, file_path, traded_object):
-        """The core plotting algorithm."""
+        """
+        The core plotting algorithm
+        """
+
         try:
             print(f"Plotting: File='{file_path}', Object='{traded_object}'")
             df = pd.read_csv(file_path, sep=";").set_index("timestamp")
@@ -173,8 +178,15 @@ class GraphArea(tk.Frame):
             messagebox.showerror("Error", f"Could not find file: {file_path}\nPlease check your paths.")
             return
 
+        # If the file is empty
+        if df.empty:
+            print(f"Empty data in {file_path}")
+            return
+
         day = int(re.search(r"day_(.*)\.", file_path).group(1))
 
+        # Changing the scale a bit, taking into account days
+        # Removing unnecessary zeros
         df.index += day * 1e6
         df.index /= 100
 
@@ -183,18 +195,27 @@ class GraphArea(tk.Frame):
                 TRADE_DATA = df[df[ticker_option] == traded_object]
                 break
 
-        if df.empty:
-            print(f"Empty data in {file_path}")
+        # If we don't have any data that matches
+        if TRADE_DATA.empty:
+            print(f"No matching data in {file_path}")
             return
 
+        # Getting the plotted data saved
+        if self.active_data is None:
+            self.active_data = TRADE_DATA.copy()
+        else:
+            self.active_data = pd.concat([self.active_data, TRADE_DATA]).sort_index()
+            # Remove any duplicated timestamps due to concatenation
+            self.active_data = self.active_data[~self.active_data.index.duplicated(keep='last')]
+
         plotConfig = {
-            "ask_price_3":      ("v", "#50ff50", 5),
-            "ask_price_2":      ("v", "#20ff20", 5),
-            "ask_price_1":      ("v", "#00ff00", 8),
+            "ask_price_3":      ("v", "#ff2e2e", 6),
+            "ask_price_2":      ("v", "#d80000", 6),
+            "ask_price_1":      ("v", "#ff0000", 8.5),
             # "mid_price":        (".", "#000000", 10),
-            "bid_price_1":      ("^", "#ff0000", 8),
-            "bid_price_2":      ("^", "#ff2020", 5),
-            "bid_price_3":      ("^", "#ff5050", 5),
+            "bid_price_1":      ("^", "#00ff00", 8.5),
+            "bid_price_2":      ("^", "#00f00c", 6),
+            "bid_price_3":      ("^", "#00ec64", 6),
             "price":            ("X", "#cc5500", 6.5)
         }
 
@@ -271,17 +292,17 @@ class ControlPanel(ttk.Notebook):
         # Initialize tabs
         self.data_tab = DataTab(self, graph_area)
         self.stats_tab = StatisticsTab(self, graph_area)
-        self.window3_tab = Window3Tab(self)
+        self.orderbook_tab = OrderBookTab(self, graph_area)
 
         # Add tabs to notebook
         self.add(self.data_tab, text="Data")
         self.add(self.stats_tab, text="Statistics")
-        self.add(self.window3_tab, text="Window 3")
+        self.add(self.orderbook_tab, text="Order Book")
 
 
 class DataTab(tk.Frame):
     """
-    Data selection and triggering plots
+    Handles data processing
     """
 
     def __init__(self, parent, graph_area):
@@ -302,11 +323,9 @@ class DataTab(tk.Frame):
         # Setting everything for the first time, so that the command refresh_files
         # can destroy everything properly
 
-        # Everything selection
+        # Selecting historical data
         self.selection_notebook = ttk.Notebook(self)
-
         self.refresh_files()
-
 
     def refresh_files(self):
         # Destroying everything correctly
@@ -374,7 +393,6 @@ class DataTab(tk.Frame):
 
         self.radio_refresh()
 
-
     def radio_refresh(self):
 
         # Destroying the ticker view to reset it
@@ -414,11 +432,12 @@ class DataTab(tk.Frame):
         # Adding the page to the notebook
         self.selection_notebook.add(self.ticker_selection, text="Ticker Selection")
 
-
-
     def trigger_plot(self):
-        # Clear the old data so the axes can reset
+        # Clear the old graph so the axes can reset
         self.graph_area.ax.clear()
+
+        # Removing the saved data
+        self.graph_area.active_data = None
 
         # Plots all the files
         for file in self.file_checks_vars:
@@ -430,14 +449,16 @@ class DataTab(tk.Frame):
 
 
 class StatisticsTab(tk.Frame):
-    """Displays real-time stats like mouse position."""
+    """
+    Displays stats
+    """
 
     def __init__(self, parent, graph_area):
         super().__init__(parent, relief=tk.RAISED)
 
         # X and Y position
-        self.label_x = tk.Label(self, text="x: ")
-        self.label_y = tk.Label(self, text="y: ")
+        self.label_x = tk.Label(self, text="Timestamp: ")
+        self.label_y = tk.Label(self, text="Price: ")
 
         self.label_x.pack(side=tk.TOP, anchor=tk.NW, padx=5, pady=5)
         self.label_y.pack(side=tk.TOP, anchor=tk.NW, padx=5, pady=5)
@@ -447,22 +468,39 @@ class StatisticsTab(tk.Frame):
 
     def update_coordinates(self, event):
         if event.inaxes:
-            self.label_x.config(text=f"x: {int(event.xdata)}")
-            self.label_y.config(text=f"y: {int(event.ydata)}")
+            self.label_x.config(text=f"Timestamp: {int(event.xdata)}")
+            self.label_y.config(text=f"Price: {int(event.ydata)}")
         else:
-            self.label_x.config(text="x: Out of bounds")
-            self.label_y.config(text="y: Out of bounds")
+            self.label_x.config(text="Timestamp: Out of bounds")
+            self.label_y.config(text="Price: Out of bounds")
 
 
-class Window3Tab(tk.Frame):
+class OrderBookTab(tk.Frame):
     """
-    Placeholder for future functionality
+    The OrderBook
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent, graph_area):
         super().__init__(parent, relief=tk.RAISED)
-        self.label = tk.Label(self, text="Window 3 Content")
-        self.label.pack(padx=5, pady=5)
+
+        self.canvas = tk.Canvas(self)
+        self.scrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.canvas.yview)
+        self.table = ttk.Frame(self.canvas)
+
+        self.table.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+
+        self.canvas.create_window((0, 0), window=self.table, anchor=tk.NW)
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.canvas.pack(side=tk.LEFT, fill=tk.Y, expand=True)
+
+
+        for i in range(500):
+            ttk.Label(self.table, text=f"Item {i}").pack()
 
 
 if __name__ == "__main__":
