@@ -1,5 +1,6 @@
 import os
 import re
+import numpy as np
 import pandas as pd
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -332,21 +333,13 @@ class DataTab(tk.Frame):
     """
 
     def __init__(self, parent, graph_area):
-        super().__init__(parent, relief=tk.RAISED)
+        super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
 
         # To reference the graph object
         self.graph_area = graph_area
 
         # Buttons Housing
-        self.data_button_housing = tk.Frame(self)
-
-        # Plot Button
-        self.plot_button = tk.Button(self.data_button_housing, relief=tk.RAISED, text="Plot Data Selection", command=self.trigger_plot)
-        self.refresh_button = tk.Button(self.data_button_housing, relief=tk.RAISED, text="Refresh File Selection", command=self.refresh_files)
-
-        # Packing the plot button
-        self.plot_button.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        self.refresh_button.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+        self.data_button_housing = DataButtonHousing(self)
         self.data_button_housing.pack(side=tk.TOP, fill=tk.X)
 
         # Setting everything for the first time, so that the command refresh_files
@@ -368,7 +361,7 @@ class DataTab(tk.Frame):
         self.selection_notebook = ttk.Notebook(self)
 
         # File selection
-        self.file_selection = tk.Frame(self.selection_notebook, relief=tk.RAISED)
+        self.file_selection = tk.Frame(self.selection_notebook, relief=tk.RIDGE, borderwidth=2)
         # A list of checkboxes for all the files
         self.file_checks = []
         self.file_checks_vars = []
@@ -378,7 +371,7 @@ class DataTab(tk.Frame):
         self.file_tickers = []
 
         # Ticker selection
-        self.ticker_selection = tk.Frame(self.selection_notebook, relief=tk.RAISED)
+        self.ticker_selection = tk.Frame(self.selection_notebook, relief=tk.RIDGE, borderwidth=2)
         # Ticker selection radio buttons is handled by self.radio_refresh()
 
         # Adding the file selection page to the notebook
@@ -437,7 +430,7 @@ class DataTab(tk.Frame):
         self.ticker_selection.destroy()
 
         # Recreating it
-        self.ticker_selection = tk.Frame(self.selection_notebook, relief=tk.RAISED)
+        self.ticker_selection = tk.Frame(self.selection_notebook, relief=tk.RIDGE, borderwidth=2)
 
         # A list of radio buttons for all the traded objects
         # Radio buttons are mutually exclusive
@@ -490,13 +483,41 @@ class DataTab(tk.Frame):
         self.graph_area.finish_plot(self.ticker_selected.get())
 
 
+class DataButtonHousing(tk.Frame):
+    """
+    Holds the buttons for data refresh
+    """
+
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        # Plot Button
+        self.plot_button = tk.Button(self,
+                                     relief=tk.RAISED,
+                                     text="Plot Data Selection",
+                                     command=parent.trigger_plot)
+        self.refresh_button = tk.Button(self,
+                                        relief=tk.RAISED,
+                                        text="Refresh File Selection",
+                                        command=parent.refresh_files)
+
+        # Packing the plot button
+        self.plot_button.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        self.refresh_button.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+
+
 class StatisticsTab(tk.Frame):
     """
     Displays stats and the orderbook
     """
 
     def __init__(self, parent, graph_area):
-        super().__init__(parent, relief=tk.RAISED)
+        super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
+
+        # The data
+        self.graph_area = graph_area
+        self.orderbook_data = graph_area.active_data
+        self.current_orderbook_timestamp = None
 
         # X and Y position
         self.label_x = tk.Label(self, text="Timestamp: ")
@@ -509,49 +530,65 @@ class StatisticsTab(tk.Frame):
         graph_area.mouse_motion_subscribers.append(self.update_coordinates)
 
         # The Orderbook
-        self.orderbook = tk.Frame(self)
+        self.orderbook = tk.Frame(self, relief=tk.RIDGE, borderwidth=2)
         self.canvas = tk.Canvas(self.orderbook)
-        self.scrollbar = ttk.Scrollbar(self.orderbook, orient=tk.VERTICAL, command=self.canvas.yview)
-        self.table = ttk.Frame(self.canvas)
 
+        # The
+        self.table = ttk.Frame(self.canvas)
+        self.prices = []
+
+        # The scrollbar
+        self.scrollbar = ttk.Scrollbar(self.orderbook, orient=tk.VERTICAL, command=self.canvas.yview)
         self.table.bind(
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
 
+        # Letting the scrollbar scroll
         self.canvas.create_window((0, 0), window=self.table, anchor=tk.NW)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.canvas.pack(side=tk.LEFT, fill=tk.Y, expand=True)
 
-        for i in range(500):
-            ttk.Label(self.table, text=f"Item {i}").pack()
-
         self.orderbook.pack(side=tk.TOP, fill=tk.Y, expand=True)
 
-
+        # Subscribe to mouse movements from the graph
+        graph_area.mouse_motion_subscribers.append(self.update_orderbook)
 
     def update_coordinates(self, event):
         """
         Displays current x and y location of the cursor
         """
 
+        # I want integers for nice display
         if event.inaxes:
-            self.label_x.config(text=f"Timestamp: {int(event.xdata)}")
-            self.label_y.config(text=f"Price: {int(event.ydata)}")
+            self.label_x.config(text=f"Timestamp: {int(np.rint(event.xdata))}")
+            self.label_y.config(text=f"Price: {int(np.rint(event.ydata))}")
         else:
             self.label_x.config(text="Timestamp: Out of bounds")
             self.label_y.config(text="Price: Out of bounds")
 
+    def update_orderbook(self, event):
+        """
+        Displays orderbook data
+        """
+
+        if event.inaxes and self.orderbook_data is not None and not self.orderbook_data.empty:
+            timestamp = int(np.rint(event.xdata))
+
+
+class CursorPosition(tk.Frame):
+    pass
+
 
 class Window_3(tk.Frame):
     """
-    The OrderBook
+    Awaiting future functionality
     """
 
     def __init__(self, parent, graph_area):
-        super().__init__(parent, relief=tk.RAISED)
+        super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
 
 if __name__ == "__main__":
     app = OrderBookApp()
