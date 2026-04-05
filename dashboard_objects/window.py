@@ -1,0 +1,33 @@
+import tkinter as tk
+import matplotlib.pyplot as plt
+from dashboard_objects.control_panel import ControlPanel
+from dashboard_objects.graph_area import GraphArea
+
+class OrderBookApp(tk.Tk):
+    """
+    The Root Application window
+    """
+
+    def __init__(self):
+        super().__init__()
+
+        # Sets the title
+        self.wm_title("Dashboard")
+
+        # Makes sure that everything closes when the window is closed
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+        # Initialise Core Components
+        self.graph_area = GraphArea(self)
+        self.control_panel = ControlPanel(self, self.graph_area)
+
+        # Pack Core Components
+        self.graph_area.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.control_panel.pack(side=tk.LEFT, fill=tk.BOTH)
+
+    def on_closing(self):
+        """
+        Shuts down matplotlib and the tkinter window
+        """
+        plt.close('all')
+        self.destroy()
