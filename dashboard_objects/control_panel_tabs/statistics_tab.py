@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import numpy as np
+from PIL.ImageOps import expand
 
 
 class StatisticsTab(tk.Frame):
@@ -21,39 +22,8 @@ class StatisticsTab(tk.Frame):
         self.current_orderbook_timestamp = None
 
         # The Orderbook
-        self.orderbook = tk.Frame(self, relief=tk.RIDGE, borderwidth=2)
-        self.canvas = tk.Canvas(self.orderbook)
-
-        # The
-        self.table = ttk.Frame(self.canvas)
-        self.prices = []
-
-        # The scrollbar
-        self.scrollbar = ttk.Scrollbar(self.orderbook, orient=tk.VERTICAL, command=self.canvas.yview)
-        self.table.bind(
-            "<Configure>",
-            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-        )
-
-        # Letting the scrollbar scroll
-        self.canvas.create_window((0, 0), window=self.table, anchor=tk.NW)
-        self.canvas.configure(yscrollcommand=self.scrollbar.set)
-
-        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.canvas.pack(side=tk.LEFT, fill=tk.Y, expand=True)
-
-        self.orderbook.pack(side=tk.TOP, fill=tk.Y, expand=True)
-
-        # Subscribe to mouse movements from the graph
-        graph_area.mouse_motion_subscribers.append(self.update_orderbook)
-
-    def update_orderbook(self, event):
-        """
-        Displays orderbook data
-        """
-
-        if event.inaxes and self.orderbook_data is not None and not self.orderbook_data.empty:
-            timestamp = int(np.rint(event.xdata))
+        self.orderbook = OrderbookDisplay(self, graph_area)
+        self.orderbook.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 
 class CursorPosition(tk.Frame):
@@ -86,3 +56,62 @@ class CursorPosition(tk.Frame):
         else:
             self.label_x.config(text="Timestamp: Out of bounds")
             self.label_y.config(text="Price: Out of bounds")
+
+
+class OrderbookDisplay(tk.Frame):
+    """
+    Display for Orderbook at cursor location
+    """
+
+    def __init__(self, parent, graph_area):
+        super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
+
+
+        self.orderbook_data = graph_area.active_data
+        self.current_orderbook_timestamp = None
+
+        self.orderbook_canvas = tk.Canvas(self)
+        self.orderbook_table = tk.Frame(self.orderbook_canvas)
+        self.prices = []
+
+        # The scrollbar
+        self.scrollbar = ttk.Scrollbar(
+            self.orderbook_table,
+            orient=tk.VERTICAL,
+            command=self.orderbook_canvas.yview
+        )
+
+        # Binding the scrollbar
+        self.orderbook_table.bind(
+            "<Configure>",
+            lambda e:
+            self.orderbook_canvas.configure(
+                scrollregion=self.orderbook_canvas.bbox("all")
+            )
+        )
+
+        # Letting the scrollbar scroll
+        self.orderbook_canvas.create_window(
+            (0, 0),
+            window=self.orderbook_table,
+            anchor=tk.NW)
+        self.orderbook_canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.orderbook_canvas.pack(side=tk.LEFT, fill=tk.Y, expand=True)
+
+        self.orderbook_table.pack(side=tk.TOP, fill=tk.Y, expand=True)
+
+        # Subscribe to mouse movements from the graph
+        graph_area.mouse_motion_subscribers.append(self.update_orderbook)
+
+    def update_orderbook(self, event):
+        """
+        Displays orderbook data
+        """
+
+        if event.inaxes and self.orderbook_data is not None and not self.orderbook_data.empty:
+            timestamp = int(np.rint(event.xdata))
+            timestamp_info = self.orderbook_data.loc[timestamp]
+
+

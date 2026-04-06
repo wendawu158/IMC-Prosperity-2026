@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 import pandas as pd
 import re
 import matplotlib.pyplot as plt
@@ -7,6 +8,7 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 from matplotlib.widgets import Cursor
 import matplotlib.ticker as ticker
 from dashboard_objects.variables import ticker_column_names
+
 
 class GraphArea(tk.Frame):
     """
@@ -44,7 +46,7 @@ class GraphArea(tk.Frame):
         self.mouse_motion_subscribers = []
 
         # Track active data for the order book visualizer
-        self.active_data = None
+        self.active_data: pd.DataFrame = pd.DataFrame()
 
     def on_mouse_motion(self, event):
         """
@@ -66,8 +68,8 @@ class GraphArea(tk.Frame):
         else:
             self.canvas.get_tk_widget().config(cursor="arrow")
 
-
-    def on_xlims_change(self, event):
+    @staticmethod
+    def on_xlims_change(event):
         """
         Changes the timestamp scale
         """
@@ -111,7 +113,8 @@ class GraphArea(tk.Frame):
         elif spacing > 1:
             event.xaxis.set_minor_locator(ticker.MultipleLocator(spacing // 2))
 
-    def on_ylims_change(self, event):
+    @staticmethod
+    def on_ylims_change(event):
         """
         Changes the price scale
         """
@@ -149,7 +152,7 @@ class GraphArea(tk.Frame):
             print(f"Plotting: File='{file_path}', Object='{traded_object}'")
             df = pd.read_csv(file_path, sep=";").set_index("timestamp")
         except FileNotFoundError:
-            tk.messagebox.showerror("Error", f"Could not find file: {file_path}\nPlease check your paths.")
+            messagebox.showerror("Error", f"Could not find file: {file_path}\nPlease check your paths.")
             return
 
         # If the file is empty
@@ -182,14 +185,13 @@ class GraphArea(tk.Frame):
             self.active_data = TRADE_DATA.copy()
         else:
             self.active_data = pd.concat([self.active_data, TRADE_DATA]).sort_index()
-            # Remove any duplicated timestamps due to concatenation
-            self.active_data = self.active_data[~self.active_data.index.duplicated(keep='last')]
+
 
         plotConfig = {
             "ask_price_3":      ("v", "#ff2e2e", 6),
             "ask_price_2":      ("v", "#d80000", 6),
             "ask_price_1":      ("v", "#ff0000", 8.5),
-            # "mid_price":        (".", "#000000", 10),
+            "mid_price":        (".", "#000000", 10),
             "bid_price_1":      ("^", "#00ff00", 8.5),
             "bid_price_2":      ("^", "#00f00c", 6),
             "bid_price_3":      ("^", "#00ec64", 6),
@@ -200,11 +202,11 @@ class GraphArea(tk.Frame):
         for column in list(TRADE_DATA):
             if column in plotConfig.keys():
                 self.ax.plot(TRADE_DATA.index,          # The time
-                            TRADE_DATA[column],               # The data
-                            plotConfig[column][0],            # The marker
-                            color=plotConfig[column][1],      # The color of the plot
-                            markersize=plotConfig[column][2]  # The size of the marker
-                            )
+                             TRADE_DATA[column],               # The data
+                             plotConfig[column][0],            # The marker
+                             color=plotConfig[column][1],      # The color of the plot
+                             markersize=plotConfig[column][2]  # The size of the marker
+                             )
 
     def finish_plot(self, traded_object):
         """
@@ -235,6 +237,8 @@ class GraphArea(tk.Frame):
 
         # Redraw canvas to autoscale axes to the new data
         self.canvas.draw()
+
+        self.active_data.to_csv("Debug Files/debug.csv")
 
     def annotate(self):
         """

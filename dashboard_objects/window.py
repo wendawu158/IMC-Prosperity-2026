@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from dashboard_objects.control_panel import ControlPanel
 from dashboard_objects.graph_area import GraphArea
 
-class OrderBookApp(tk.Tk):
+class OrderbookApp(tk.Tk):
     """
     The Root Application window
     """
@@ -18,8 +18,8 @@ class OrderBookApp(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # Initialise Core Components
-        self.graph_area = GraphArea(self)
-        self.control_panel = ControlPanel(self, self.graph_area)
+        self.graph_area: GraphArea = GraphArea(self)
+        self.control_panel: ControlPanel = ControlPanel(self, self.graph_area)
 
         # Pack Core Components
         self.graph_area.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)

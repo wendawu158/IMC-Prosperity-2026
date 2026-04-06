@@ -27,6 +27,13 @@ class Trader:
     def emerald(self):
         """
         Trading algorithm specifically for Emeralds
+
+        Ticker
+        Emeralds are a stable product
+        Their true price stays at 10000 exactly
+        The bid/ask given by the bot market makers is always 9992/10008
+        However, sometimes we can see traders taking exit liquidity to 10000
+
         """
 
         # Emeralds
