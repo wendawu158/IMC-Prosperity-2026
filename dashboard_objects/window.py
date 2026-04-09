@@ -1,5 +1,8 @@
+# Functionality Imports
 import tkinter as tk
 import matplotlib.pyplot as plt
+
+# Child Imports
 from dashboard_objects.control_panel import ControlPanel
 from dashboard_objects.graph_area import GraphArea
 
@@ -25,7 +28,7 @@ class OrderbookApp(tk.Tk):
         self.graph_area.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.control_panel.pack(side=tk.LEFT, fill=tk.BOTH)
 
-    def on_closing(self):
+    def on_closing(self) -> None:
         """
         Shuts down matplotlib and the tkinter window
         """

@@ -32,8 +32,12 @@ class Trader:
         Emeralds are a stable product
         Their true price stays at 10000 exactly
         The bid/ask given by the bot market makers is always 9992/10008
-        However, sometimes we can see traders taking exit liquidity to 10000
+        However, sometimes we can see traders taking exit liquidity at 10000
 
+        Strategy
+        Undercut other market makers by 1 unit, offering at just above and below their bid/ask
+        Use people taking exit liquidity to rebalance position
+        Never take bids/asks below/above 10000
         """
 
         # Emeralds

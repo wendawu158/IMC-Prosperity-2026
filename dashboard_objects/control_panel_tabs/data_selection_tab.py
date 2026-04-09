@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import os
 import pandas as pd
-from dashboard_objects.variables import ticker_column_names
+from dashboard_objects.variables import *
 
 
 class DataTab(tk.Frame):
@@ -30,8 +30,8 @@ class DataTab(tk.Frame):
     def refresh_files(self):
         self.selection_notebook.refresh_files()
 
-    def trigger_plot(self):
-        self.selection_notebook.trigger_plot()
+    def trigger_orderbook(self):
+        self.selection_notebook.trigger_orderbook()
 
 
 class DataButtonHousing(tk.Frame):
@@ -46,7 +46,7 @@ class DataButtonHousing(tk.Frame):
         self.plot_button = tk.Button(self,
                                      relief=tk.RAISED,
                                      text="Plot Data Selection",
-                                     command=parent.trigger_plot)
+                                     command=parent.trigger_orderbook)
         self.refresh_button = tk.Button(self,
                                         relief=tk.RAISED,
                                         text="Refresh File Selection",
@@ -113,7 +113,7 @@ class SelectionNotebook(ttk.Notebook):
                     # We want the timestamp as our index and a column telling us which ticker has been traded
                     # This will be for selection
                     if ("timestamp" in column_names and
-                            bool(set(ticker_column_names) & set(column_names))
+                            bool(set(ticker_columns) & set(column_names))
                     ):
 
                         # Adding checkmarks to see if we want to plot those files
@@ -132,7 +132,7 @@ class SelectionNotebook(ttk.Notebook):
             df = pd.read_csv(f"Data/{file_name}", sep=";")
 
             # Check if we have tickers we want
-            for ticker_column in ticker_column_names:
+            for ticker_column in ticker_columns:
                 if ticker_column in df.columns:
                     # Add tickers
                     self.file_tickers.append(list(df[ticker_column].unique()))
@@ -183,7 +183,7 @@ class SelectionNotebook(ttk.Notebook):
         # Adding the page to the notebook
         self.add(self.ticker_selection, text="Ticker Selection")
 
-    def trigger_plot(self):
+    def trigger_orderbook(self):
         """
         Getting the plots to be plotted
         """
@@ -192,13 +192,12 @@ class SelectionNotebook(ttk.Notebook):
         self.parent.graph_area.ax.clear()
 
         # Removing the saved data
-        self.parent.graph_area.active_data = None
+        self.parent.graph_area.active_orderbook_data = None
 
         # Plots all the files
         for file in self.file_checks_vars:
             if file.get() != "":
                 print(f"plotting {file.get()}")
-                self.parent.graph_area.plot_order_book(f"Data/{file.get()}",
-                    self.ticker_selected.get())
+                self.parent.graph_area.plot_orderbook(f"Data/{file.get()}", self.ticker_selected.get())
 
-        self.parent.graph_area.finish_plot(self.ticker_selected.get())
+        self.parent.graph_area.finish_orderbook(self.ticker_selected.get())

@@ -1,21 +1,27 @@
+# Functionality imports
 import tkinter as tk
-from tkinter import messagebox
 import pandas as pd
-import re
 import matplotlib.pyplot as plt
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.widgets import Cursor
 import matplotlib.ticker as ticker
-from dashboard_objects.variables import ticker_column_names
+from typing import List
 
+# Child imports
+from dashboard_objects.plot_methods.file_plot_raw import plot_order_book, finish_orderbook
+
+# Parent imports
+if False:
+    from dashboard_objects.window import OrderbookApp
 
 class GraphArea(tk.Frame):
     """
     Encapsulates the Matplotlib figure, canvas, and toolbar
     """
 
-    def __init__(self, parent):
+    def __init__(self,
+                 parent: "OrderbookApp"):
         super().__init__(parent)
 
         # Setup Figure and Axes
@@ -42,20 +48,25 @@ class GraphArea(tk.Frame):
         self.canvas.mpl_connect("key_press_event", key_press_handler)
         self.canvas.mpl_connect('motion_notify_event', self.on_mouse_motion)
 
-        # Allow other objects to subscribe to mouse movement
-        self.mouse_motion_subscribers = []
+        # Allow objects to subscribe to mouse movement
+        self.mouse_motion_subscribers: List[callable(tk.Event)] = [self.cursor_display]
 
         # Track active data for the order book visualizer
-        self.active_data: pd.DataFrame = pd.DataFrame()
+        self.active_orderbook_data: pd.DataFrame = pd.DataFrame()
 
-    def on_mouse_motion(self, event):
+    def on_mouse_motion(self, event) -> None:
         """
-        Handles cursor visibility and broadcasts mouse coordinates to other elements
+        Handles cursor movement by broadcasting mouse coordinates to other elements
         """
 
         # Notify subscribers (like the Statistics Tab)
         for callback in self.mouse_motion_subscribers:
             callback(event)
+
+    def cursor_display(self, event) -> None:
+        """
+        Shows the crosshair cursor
+        """
 
         # Cursor visibility
         # Weird bug happens if we don't ignore if panning
@@ -69,7 +80,7 @@ class GraphArea(tk.Frame):
             self.canvas.get_tk_widget().config(cursor="arrow")
 
     @staticmethod
-    def on_xlims_change(event):
+    def on_xlims_change(event) -> None:
         """
         Changes the timestamp scale
         """
@@ -114,7 +125,7 @@ class GraphArea(tk.Frame):
             event.xaxis.set_minor_locator(ticker.MultipleLocator(spacing // 2))
 
     @staticmethod
-    def on_ylims_change(event):
+    def on_ylims_change(event) -> None:
         """
         Changes the price scale
         """
@@ -142,105 +153,22 @@ class GraphArea(tk.Frame):
         elif spacing > 1:
             event.yaxis.set_minor_locator(ticker.MultipleLocator(spacing // 2))
 
-    def plot_order_book(self, file_path, traded_object):
+    def plot_orderbook(self,
+                       file_path: str,
+                       traded_object: str) -> None:
         """
-        The core plotting algorithm
+        Plotting raw files (not editing the data)
         """
+        plot_order_book(self, file_path, traded_object)
 
-        # Looking for the file; does it exist?
-        try:
-            print(f"Plotting: File='{file_path}', Object='{traded_object}'")
-            df = pd.read_csv(file_path, sep=";").set_index("timestamp")
-        except FileNotFoundError:
-            messagebox.showerror("Error", f"Could not find file: {file_path}\nPlease check your paths.")
-            return
-
-        # If the file is empty
-        if df.empty:
-            print(f"Empty data in {file_path}")
-            return
-
-        # Getting the days
-        day = int(re.search(r"day_(.*)\.", file_path).group(1))
-
-        # Changing the scale a bit, taking into account days
-        # Removing unnecessary zeros
-        df.index += day * 1e6
-        df.index /= 100
-
-        # Getting the relevant data
-        # We only want the data from the ticker we are interested in
-        for ticker_option in ticker_column_names:
-            if ticker_option in df.columns:
-                TRADE_DATA = df[df[ticker_option] == traded_object]
-                break
-
-        # If we don't have any data that matches
-        if TRADE_DATA.empty:
-            print(f"No matching data in {file_path}")
-            return
-
-        # Getting the plotted data saved
-        if self.active_data is None:
-            self.active_data = TRADE_DATA.copy()
-        else:
-            self.active_data = pd.concat([self.active_data, TRADE_DATA]).sort_index()
-
-
-        plotConfig = {
-            "ask_price_3":      ("v", "#ff2e2e", 6),
-            "ask_price_2":      ("v", "#d80000", 6),
-            "ask_price_1":      ("v", "#ff0000", 8.5),
-            "mid_price":        (".", "#000000", 10),
-            "bid_price_1":      ("^", "#00ff00", 8.5),
-            "bid_price_2":      ("^", "#00f00c", 6),
-            "bid_price_3":      ("^", "#00ec64", 6),
-            "price":            ("X", "#cc5500", 6.5)
-        }
-
-        # Plot new data
-        for column in list(TRADE_DATA):
-            if column in plotConfig.keys():
-                self.ax.plot(TRADE_DATA.index,          # The time
-                             TRADE_DATA[column],               # The data
-                             plotConfig[column][0],            # The marker
-                             color=plotConfig[column][1],      # The color of the plot
-                             markersize=plotConfig[column][2]  # The size of the marker
-                             )
-
-    def finish_plot(self, traded_object):
+    def finish_orderbook(self,
+                         traded_object: str) -> None:
         """
-        We run this at the end of plotting all the data we want to see
-        This is to finish off the plot, add the bells and whistles
+        Finishing off the orderbook plot
         """
+        finish_orderbook(self, traded_object)
 
-        # Titles
-        self.ax.set_xlabel("Timestamp")
-        self.ax.set_ylabel("Price")
-        self.ax.set_title(f"{traded_object}")
-
-        # Tickers
-        self.ax.callbacks.connect('xlim_changed', self.on_xlims_change)
-        self.ax.callbacks.connect('ylim_changed', self.on_ylims_change)
-
-        # Gridlines
-        self.ax.grid(which='major', axis='x', color="#000000", alpha=0.5)
-        self.ax.grid(which='major', axis='y', color="#000000", alpha=0.5)
-        self.ax.grid(which='minor', axis='x', color="#202020", alpha=0.5)
-        self.ax.grid(which='minor', axis='y', color="#202020", alpha=0.5)
-
-        # Disable scientific notation
-        self.ax.ticklabel_format(useOffset=False)
-
-        # Re-apply crosshair cursor (since clearing axes destroys the old one)
-        self.ax.cursor = Cursor(self.ax, useblit=True, horizOn=True, vertOn=True, color="#101010", linewidth=0.5)
-
-        # Redraw canvas to autoscale axes to the new data
-        self.canvas.draw()
-
-        self.active_data.to_csv("Debug Files/debug.csv")
-
-    def annotate(self):
+    def annotate(self) -> None:
         """
         Future function to show more information on trades and orders
         """
@@ -254,7 +182,9 @@ class VerticalNavigationToolbar2Tk(NavigationToolbar2Tk):
     Thanks @acw1668 from stackoverflow
     """
 
-    def __init__(self, targetCanvas, parent):
+    def __init__(self,
+                 targetCanvas: "FigureCanvasTkAgg",
+                 parent: "GraphArea"):
         super().__init__(targetCanvas, parent, pack_toolbar=False)
 
     # override _Button() to re-pack the toolbar button in vertical direction

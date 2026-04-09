@@ -1,14 +1,22 @@
+# Child imports
 from tkinter import ttk
 from dashboard_objects.control_panel_tabs.data_selection_tab import DataTab
 from dashboard_objects.control_panel_tabs.statistics_tab import StatisticsTab
 from dashboard_objects.control_panel_tabs.future_tab import Window_3
+
+# Parent and Sibling imports
+if False:
+    from dashboard_objects.window import OrderbookApp
+    from dashboard_objects.graph_area import GraphArea
 
 class ControlPanel(ttk.Notebook):
     """
     The main side panel housing all control tabs.
     """
 
-    def __init__(self, parent, graph_area):
+    def __init__(self,
+                 parent: "OrderbookApp",
+                 graph_area: "GraphArea"):
         super().__init__(parent)
         self.configure(width=300)
 

@@ -1,0 +1,18 @@
+Type all custom objects: Easier to code and maintain
+- Need to type parents and children (children should be auto typed?)
+- Every file needs to import its parents and children
+
+Box to enter to fit to certain timestamp view
+Data tab upgrades
+- rolling average plot option
+  - Simple moving average
+  - Exponential Moving average
+- Bollinger bands
+- highlight of maximums and minimums option
+- calculate stats option
+  - rolling std
+  - relative strength index
+
+popup over certain data points
+
+Key points (peaks and lows)

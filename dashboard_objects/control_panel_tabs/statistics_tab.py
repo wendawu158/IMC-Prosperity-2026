@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import numpy as np
-from PIL.ImageOps import expand
 
 
 class StatisticsTab(tk.Frame):
@@ -18,7 +17,7 @@ class StatisticsTab(tk.Frame):
 
         # The data
         self.graph_area = graph_area
-        self.orderbook_data = graph_area.active_data
+        self.orderbook_data = graph_area.active_orderbook_data
         self.current_orderbook_timestamp = None
 
         # The Orderbook
@@ -67,7 +66,7 @@ class OrderbookDisplay(tk.Frame):
         super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
 
 
-        self.orderbook_data = graph_area.active_data
+        self.orderbook_data = graph_area.active_orderbook_data
         self.current_orderbook_timestamp = None
 
         self.orderbook_canvas = tk.Canvas(self)
@@ -109,6 +108,10 @@ class OrderbookDisplay(tk.Frame):
         """
         Displays orderbook data
         """
+
+        # Cleans data
+        orderbook_data_clean = self.orderbook_data
+
 
         if event.inaxes and self.orderbook_data is not None and not self.orderbook_data.empty:
             timestamp = int(np.rint(event.xdata))
