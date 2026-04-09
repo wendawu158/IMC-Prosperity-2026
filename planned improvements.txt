@@ -13,6 +13,8 @@ Data tab upgrades
   - rolling std
   - relative strength index
 
+Enable plotting of log files from backtester
+
 popup over certain data points
 
 Key points (peaks and lows)

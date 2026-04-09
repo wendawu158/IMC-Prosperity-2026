@@ -53,6 +53,7 @@ class GraphArea(tk.Frame):
 
         # Track active data for the order book visualizer
         self.active_orderbook_data: pd.DataFrame = pd.DataFrame()
+        self.active_trades_data: pd.DataFrame = pd.DataFrame()
 
     def on_mouse_motion(self, event) -> None:
         """

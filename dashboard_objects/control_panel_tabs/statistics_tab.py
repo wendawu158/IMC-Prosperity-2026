@@ -2,13 +2,19 @@ import tkinter as tk
 from tkinter import ttk
 import numpy as np
 
+if False:
+    from dashboard_objects.control_panel import ControlPanel
+    from dashboard_objects.graph_area import GraphArea
+
 
 class StatisticsTab(tk.Frame):
     """
     Displays stats and the orderbook
     """
 
-    def __init__(self, parent, graph_area):
+    def __init__(self,
+                 parent: "ControlPanel",
+                 graph_area: "GraphArea"):
         super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
 
         # Cursor location
@@ -30,7 +36,9 @@ class CursorPosition(tk.Frame):
     Little frame to display current location of cursor
     """
 
-    def __init__(self, parent, graph_area):
+    def __init__(self,
+                 parent: StatisticsTab,
+                 graph_area: "GraphArea"):
         super().__init__(parent)
 
         # X and Y position
@@ -62,9 +70,10 @@ class OrderbookDisplay(tk.Frame):
     Display for Orderbook at cursor location
     """
 
-    def __init__(self, parent, graph_area):
+    def __init__(self,
+                 parent: StatisticsTab,
+                 graph_area: "GraphArea"):
         super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
-
 
         self.orderbook_data = graph_area.active_orderbook_data
         self.current_orderbook_timestamp = None
@@ -97,9 +106,9 @@ class OrderbookDisplay(tk.Frame):
         self.orderbook_canvas.configure(yscrollcommand=self.scrollbar.set)
 
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.orderbook_canvas.pack(side=tk.LEFT, fill=tk.Y, expand=True)
+        self.orderbook_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        self.orderbook_table.pack(side=tk.TOP, fill=tk.Y, expand=True)
+        self.orderbook_table.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         # Subscribe to mouse movements from the graph
         graph_area.mouse_motion_subscribers.append(self.update_orderbook)
@@ -111,7 +120,6 @@ class OrderbookDisplay(tk.Frame):
 
         # Cleans data
         orderbook_data_clean = self.orderbook_data
-
 
         if event.inaxes and self.orderbook_data is not None and not self.orderbook_data.empty:
             timestamp = int(np.rint(event.xdata))
