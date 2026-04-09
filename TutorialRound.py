@@ -147,8 +147,32 @@ class Trader:
         TOMATOES = "TOMATOES"
 
         # Market making
+        self.orders[TOMATOES] = list()
         best_ask = sorted(self.state.order_depths[TOMATOES].sell_orders.keys())[0]
         best_bid = sorted(self.state.order_depths[TOMATOES].buy_orders.keys())[-1]
+
+        position_tomatoes = 0
+
+        try:
+            position_tomatoes= self.state.position[TOMATOES]
+        except KeyError:
+            pass
+
+        # Check for immediately profitable bids
+        if len(bids_emerald.keys()) != 0:
+
+            # Checking all the bids
+            for bid in bids_emerald.keys():
+
+                # Is there a bid better than the stable price of the EMERALDS?
+                if bid > EMERALDS_TRUE_PRICE:
+                    self.orders[EMERALDS].append(
+                        Order(EMERALDS, bid, -1 * bids_emerald[bid])
+                    )   # Here we are placing a sell to any bid above the fair price
+
+                # Figuring out the best bid
+                if bid > best_bid:
+                    best_bid = bid
 
 
 
