@@ -6,11 +6,14 @@ import matplotlib.pyplot as plt
 from dashboard_objects.control_panel import ControlPanel
 from dashboard_objects.graph_area import GraphArea
 
+
+# noinspection PyMissingTypeHints
 class OrderbookApp(tk.Tk):
     """
     The Root Application window
     """
 
+    # noinspection PyMissingTypeHints
     def __init__(self):
         super().__init__()
 

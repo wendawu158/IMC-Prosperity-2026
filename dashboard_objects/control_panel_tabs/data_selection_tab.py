@@ -1,8 +1,14 @@
+# Functional Imports
 import tkinter as tk
 from tkinter import ttk
 import os
 import pandas as pd
 from dashboard_objects.variables import *
+
+# Parental Imports
+if False:
+    from dashboard_objects.control_panel import ControlPanel
+    from dashboard_objects.graph_area import GraphArea
 
 
 class DataTab(tk.Frame):
@@ -10,7 +16,9 @@ class DataTab(tk.Frame):
     Handles data processing
     """
 
-    def __init__(self, parent, graph_area):
+    def __init__(self,
+                 parent: "ControlPanel",
+                 graph_area: "GraphArea"):
         super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
 
         # To reference the graph object
@@ -27,10 +35,10 @@ class DataTab(tk.Frame):
         self.selection_notebook = SelectionNotebook(self)
         self.refresh_files()
 
-    def refresh_files(self):
+    def refresh_files(self) -> None:
         self.selection_notebook.refresh_files()
 
-    def trigger_orderbook(self):
+    def trigger_orderbook(self) -> None:
         self.selection_notebook.trigger_orderbook()
 
 
@@ -39,7 +47,8 @@ class DataButtonHousing(tk.Frame):
     Holds the buttons for data refresh
     """
 
-    def __init__(self, parent):
+    def __init__(self,
+                 parent: "DataTab"):
         super().__init__(parent)
 
         # Plot Button
@@ -62,14 +71,14 @@ class SelectionNotebook(ttk.Notebook):
     Selection notebook for files
     """
 
-    def __init__(self, parent):
+    def __init__(self,
+                 parent: "DataTab"):
         super().__init__(parent)
         self.parent = parent
 
         self.refresh_files()
 
-
-    def refresh_files(self):
+    def refresh_files(self) -> None:
         """
         Refreshing the files, if we update the Data directory
         """
@@ -83,12 +92,12 @@ class SelectionNotebook(ttk.Notebook):
         # File selection
         self.file_selection = tk.Frame(self, relief=tk.RIDGE, borderwidth=2)
         # A list of checkboxes for all the files
-        self.file_checks = []
-        self.file_checks_vars = []
+        self.file_checks: list[tk.Checkbutton] = []
+        self.file_checks_vars: list[tk.StringVar] = []
 
         # Getting tickers form every file
         # This is going to be a 2D-Array
-        self.file_tickers = []
+        self.file_tickers: list[list[str]] = []
 
         # Ticker selection
         self.ticker_selection = tk.Frame(self, relief=tk.RIDGE, borderwidth=2)
@@ -141,7 +150,7 @@ class SelectionNotebook(ttk.Notebook):
         # Refresh radio buttons (by default)
         self.radio_refresh()
 
-    def radio_refresh(self):
+    def radio_refresh(self) -> None:
         """
         Changing the radio buttons on display based on which checkboxes have been checked
         """
@@ -183,7 +192,7 @@ class SelectionNotebook(ttk.Notebook):
         # Adding the page to the notebook
         self.add(self.ticker_selection, text="Ticker Selection")
 
-    def trigger_orderbook(self):
+    def trigger_orderbook(self) -> None:
         """
         Getting the plots to be plotted
         """
@@ -192,7 +201,7 @@ class SelectionNotebook(ttk.Notebook):
         self.parent.graph_area.ax.clear()
 
         # Removing the saved data
-        self.parent.graph_area.active_orderbook_data = None
+        self.parent.graph_area.active_orderbook_data = pd.DataFrame()
 
         # Plots all the files
         for file in self.file_checks_vars:

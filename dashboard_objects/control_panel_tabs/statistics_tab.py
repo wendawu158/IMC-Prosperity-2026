@@ -2,13 +2,19 @@ import tkinter as tk
 from tkinter import ttk
 import numpy as np
 
+if False:
+    from dashboard_objects.control_panel import ControlPanel
+    from dashboard_objects.graph_area import GraphArea
+
 
 class StatisticsTab(tk.Frame):
     """
     Displays stats and the orderbook
     """
 
-    def __init__(self, parent, graph_area):
+    def __init__(self,
+                 parent: "ControlPanel",
+                 graph_area: "GraphArea"):
         super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
 
         # Cursor location
@@ -30,7 +36,9 @@ class CursorPosition(tk.Frame):
     Little frame to display current location of cursor
     """
 
-    def __init__(self, parent, graph_area):
+    def __init__(self,
+                 parent: StatisticsTab,
+                 graph_area: "GraphArea"):
         super().__init__(parent)
 
         # X and Y position
@@ -62,7 +70,9 @@ class OrderbookDisplay(tk.Frame):
     Display for Orderbook at cursor location
     """
 
-    def __init__(self, parent, graph_area):
+    def __init__(self,
+                 parent: StatisticsTab,
+                 graph_area: "GraphArea"):
         super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
 
 

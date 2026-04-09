@@ -116,7 +116,7 @@ Product = str
 Position = int
 
 class TradingState(object):
-   def __init__(self,
+    def __init__(self,
                  traderData: str,
                  timestamp: Time,
                  listings: Dict[Symbol, Listing],
