@@ -74,13 +74,12 @@ def process_file(plot: "GraphArea",
     # If we don't have any data that matches
     if trade_data.empty:
         print(f"No matching data in {file_path}")
-        return trade_data
 
     # Getting the plotted data saved
-    if plot.active_orderbook_data is None:
-        plot.active_orderbook_data = trade_data.copy()
-    else:
+    if "prices" in file_path:
         plot.active_orderbook_data = pd.concat([plot.active_orderbook_data, trade_data]).sort_index()
+    elif "trades" in file_path:
+        plot.active_trades_data = pd.concat([plot.active_trades_data, trade_data]).sort_index()
 
     return trade_data
 

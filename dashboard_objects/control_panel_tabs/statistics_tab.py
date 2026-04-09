@@ -75,7 +75,6 @@ class OrderbookDisplay(tk.Frame):
                  graph_area: "GraphArea"):
         super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
 
-
         self.orderbook_data = graph_area.active_orderbook_data
         self.current_orderbook_timestamp = None
 
@@ -107,9 +106,9 @@ class OrderbookDisplay(tk.Frame):
         self.orderbook_canvas.configure(yscrollcommand=self.scrollbar.set)
 
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.orderbook_canvas.pack(side=tk.LEFT, fill=tk.Y, expand=True)
+        self.orderbook_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        self.orderbook_table.pack(side=tk.TOP, fill=tk.Y, expand=True)
+        self.orderbook_table.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         # Subscribe to mouse movements from the graph
         graph_area.mouse_motion_subscribers.append(self.update_orderbook)
@@ -121,7 +120,6 @@ class OrderbookDisplay(tk.Frame):
 
         # Cleans data
         orderbook_data_clean = self.orderbook_data
-
 
         if event.inaxes and self.orderbook_data is not None and not self.orderbook_data.empty:
             timestamp = int(np.rint(event.xdata))
