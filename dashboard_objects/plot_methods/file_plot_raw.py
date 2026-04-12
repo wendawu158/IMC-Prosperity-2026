@@ -9,7 +9,7 @@ from dashboard_objects.variables import *
 if False:
     from dashboard_objects.graph_area import GraphArea
 
-def plot_order_book(plot: "GraphArea",
+def plot_raw_plot(plot: "GraphArea",
                     file_path: str,
                     traded_object: str):
     """
@@ -83,7 +83,7 @@ def process_file(plot: "GraphArea",
 
     return trade_data
 
-def finish_orderbook(plot: "GraphArea",
+def finish_raw_plot(plot: "GraphArea",
                      traded_object: str):
     """
     We run this at the end of plotting all the data we want to see

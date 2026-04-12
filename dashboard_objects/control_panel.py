@@ -23,9 +23,9 @@ class ControlPanel(ttk.Notebook):
         # Initialize tabs
         self.data_tab = DataTab(self, graph_area)
         self.stats_tab = StatisticsTab(self, graph_area)
-        self.orderbook_tab = Window_3(self, graph_area)
+        self.future_tab = Window_3(self, graph_area)
 
         # Add tabs to notebook
         self.add(self.data_tab, text="Data")
         self.add(self.stats_tab, text="Statistics")
-        self.add(self.orderbook_tab, text="Window 3")
+        self.add(self.future_tab, text="Window 3")

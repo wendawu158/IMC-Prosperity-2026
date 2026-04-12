@@ -9,11 +9,12 @@ import matplotlib.ticker as ticker
 from typing import List
 
 # Child imports
-from dashboard_objects.plot_methods.file_plot_raw import plot_order_book, finish_orderbook
+from dashboard_objects.plot_methods.file_plot_raw import plot_raw_plot, finish_raw_plot
 
 # Parent imports
 if False:
     from dashboard_objects.window import OrderbookApp
+
 
 class GraphArea(tk.Frame):
     """
@@ -154,20 +155,26 @@ class GraphArea(tk.Frame):
         elif spacing > 1:
             event.yaxis.set_minor_locator(ticker.MultipleLocator(spacing // 2))
 
-    def plot_orderbook(self,
-                       file_path: str,
-                       traded_object: str) -> None:
+    def plot_raw_plot(self,
+                      file_path: str,
+                      traded_object: str) -> None:
         """
         Plotting raw files (not editing the data)
         """
-        plot_order_book(self, file_path, traded_object)
+        plot_raw_plot(self, file_path, traded_object)
 
-    def finish_orderbook(self,
-                         traded_object: str) -> None:
+    def finish_raw_plot(self,
+                        traded_object: str) -> None:
         """
         Finishing off the orderbook plot
         """
-        finish_orderbook(self, traded_object)
+        finish_raw_plot(self, traded_object)
+
+    def clear(self) -> None:
+        self.ax.clear()
+
+        # Removing the saved data
+        self.active_orderbook_data = pd.DataFrame()
 
     def annotate(self) -> None:
         """
@@ -175,6 +182,7 @@ class GraphArea(tk.Frame):
         """
 
         pass
+
 
 class VerticalNavigationToolbar2Tk(NavigationToolbar2Tk):
     """
@@ -203,5 +211,3 @@ class VerticalNavigationToolbar2Tk(NavigationToolbar2Tk):
     # disable showing mouse position in toolbar
     def set_message(self, s):
         pass
-
-

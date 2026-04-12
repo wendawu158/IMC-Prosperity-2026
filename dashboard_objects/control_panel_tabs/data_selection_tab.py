@@ -21,6 +21,8 @@ class DataTab(tk.Frame):
                  graph_area: "GraphArea"):
         super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
 
+        self.parent = parent
+
         # To reference the graph object
         self.graph_area = graph_area
 
@@ -198,15 +200,14 @@ class SelectionNotebook(ttk.Notebook):
         """
 
         # Clear the old graph so the axes can reset
-        self.parent.graph_area.ax.clear()
-
-        # Removing the saved data
-        self.parent.graph_area.active_orderbook_data = pd.DataFrame()
+        self.parent.graph_area.clear()
 
         # Plots all the files
         for file in self.file_checks_vars:
             if file.get() != "":
                 print(f"plotting {file.get()}")
-                self.parent.graph_area.plot_orderbook(f"Data/{file.get()}", self.ticker_selected.get())
+                self.parent.graph_area.plot_raw_plot(f"Data/{file.get()}", self.ticker_selected.get())
 
-        self.parent.graph_area.finish_orderbook(self.ticker_selected.get())
+        self.parent.graph_area.finish_raw_plot(self.ticker_selected.get())
+
+        self.parent.parent.stats_tab.orderbook.set_orderbook()
