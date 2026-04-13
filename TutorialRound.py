@@ -147,7 +147,7 @@ class Trader:
 
         #Ticker
         """"
-        TOMATO are a stable product
+        TOMATO are a drifting product
         Their true price stays at midpoint exactly
         The bid/ask given by the bot market makers is always 
         However, sometimes we can see traders taking exit liquidity

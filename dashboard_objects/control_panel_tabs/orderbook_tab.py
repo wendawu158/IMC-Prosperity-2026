@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import numpy as np
-import pandas as pd
-from PIL.ImageOps import expand
 
 from dashboard_objects.variables import bid_prices, ask_prices, bid_volumes, ask_volumes
 
@@ -11,7 +9,7 @@ if False:
     from dashboard_objects.graph_area import GraphArea
 
 
-class StatisticsTab(tk.Frame):
+class OrderbookTab(tk.Frame):
     """
     Displays stats and the orderbook
     """
@@ -20,6 +18,7 @@ class StatisticsTab(tk.Frame):
                  parent: "ControlPanel",
                  graph_area: "GraphArea"):
         super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
+        self.parent = parent
 
         # Cursor location
         self.cursor_position_display = CursorPositionDisplay(self, graph_area)
@@ -35,8 +34,8 @@ class StatisticsTab(tk.Frame):
         self.orderbook.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
         # Orderbook control bar
-        self.orderbook_display_panel = OrderbookDisplayPanel(self, graph_area)
-        self.orderbook_display_panel.pack(side=tk.TOP, fill=tk.X)
+        self.orderbook_display_controls = OrderbookDisplayControls(self, graph_area)
+        self.orderbook_display_controls.pack(side=tk.TOP, fill=tk.X)
 
 
 class CursorPositionDisplay(tk.Frame):
@@ -45,7 +44,7 @@ class CursorPositionDisplay(tk.Frame):
     """
 
     def __init__(self,
-                 parent: StatisticsTab,
+                 parent: OrderbookTab,
                  graph_area: "GraphArea"):
         super().__init__(parent)
 
@@ -73,16 +72,17 @@ class CursorPositionDisplay(tk.Frame):
             self.label_y.config(text="Price: Out of bounds")
 
 
-class OrderbookDisplayPanel(tk.Frame):
+class OrderbookDisplayControls(tk.Frame):
     """
     Buttons and controls for our orderbook display
     """
 
     def __init__(self,
-                 parent: "StatisticsTab",
+                 parent: "OrderbookTab",
                  graph_area: "GraphArea"):
         super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
 
+        # Inheritance (Luke I am your father)
         self.parent = parent
         self.graph_area = graph_area
 
@@ -93,6 +93,10 @@ class OrderbookDisplayPanel(tk.Frame):
         self.collapse_zeros_button = tk.Button(self, text="Collapse\nZeros", relief='raised', underline=5,
                                                command=self.collapse_zeros_button_func)
 
+        self.is_locked_information = False
+        self.is_locked_view = False
+        self.is_collapse_zeros = False
+
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.columnconfigure(2, weight=1)
@@ -101,23 +105,41 @@ class OrderbookDisplayPanel(tk.Frame):
         self.lock_orderbook_view_button.grid(row=0, column=1, sticky=tk.NSEW)
         self.collapse_zeros_button.grid(row=0, column=2, sticky=tk.NSEW)
 
+        self.parent.parent.parent.bind("<Key>", self.key_press)
+
+    def key_press(self, event: tk.Event):
+        match event.char:
+            case "i":
+                self.lock_information_button_func()
+            case "o":
+                self.lock_orderbook_view_button_func()
+            case "p":
+                self.collapse_zeros_button_func()
+
+
     def lock_information_button_func(self):
         if self.lock_information_button.config('relief')[-1] == 'sunken':
             self.lock_information_button.config(relief='raised')
+            self.is_locked_information = False
         else:
             self.lock_information_button.config(relief='sunken')
+            self.is_locked_information = True
 
     def lock_orderbook_view_button_func(self):
         if self.lock_orderbook_view_button.config('relief')[-1] == 'sunken':
             self.lock_orderbook_view_button.config(relief='raised')
+            self.is_locked_view = False
         else:
             self.lock_orderbook_view_button.config(relief='sunken')
+            self.is_locked_view = True
 
     def collapse_zeros_button_func(self):
         if self.collapse_zeros_button.config('relief')[-1] == 'sunken':
             self.collapse_zeros_button.config(relief='raised')
+            self.is_collapse_zeros = False
         else:
             self.collapse_zeros_button.config(relief='sunken')
+            self.is_collapse_zeros = True
 
 
 
@@ -127,7 +149,7 @@ class OrderbookDisplay(tk.Frame):
     """
 
     def __init__(self,
-                 parent: StatisticsTab,
+                 parent: OrderbookTab,
                  graph_area: "GraphArea"):
         super().__init__(parent, relief=tk.RIDGE, borderwidth=2)
 
@@ -138,7 +160,7 @@ class OrderbookDisplay(tk.Frame):
 
         # Orderbook info
         self.prices: list[tk.Label] = []
-        self.volumes: list[tk.Label] = []
+        self.volumes: list[dict[str, tk.Canvas | int]] = []
         self.max_vol = 0
         self.min_price = 0
         self.max_price = 0
@@ -230,6 +252,9 @@ class OrderbookDisplay(tk.Frame):
     def update_orderbook(self, event):
         orderbook_data = self.graph_area.active_orderbook_data
         if not event.inaxes or orderbook_data.empty:
+            return
+
+        if self.parent.orderbook_display_controls.is_locked_information:
             return
 
         timestamp = int(np.rint(event.xdata))

@@ -1,7 +1,7 @@
 # Child imports
 from tkinter import ttk
 from dashboard_objects.control_panel_tabs.data_selection_tab import DataTab
-from dashboard_objects.control_panel_tabs.statistics_tab import StatisticsTab
+from dashboard_objects.control_panel_tabs.orderbook_tab import OrderbookTab
 from dashboard_objects.control_panel_tabs.future_tab import Window_3
 
 # Parent and Sibling imports
@@ -18,11 +18,12 @@ class ControlPanel(ttk.Notebook):
                  parent: "OrderbookApp",
                  graph_area: "GraphArea"):
         super().__init__(parent)
+        self.parent = parent
         self.configure(width=300)
 
         # Initialize tabs
         self.data_tab = DataTab(self, graph_area)
-        self.stats_tab = StatisticsTab(self, graph_area)
+        self.stats_tab = OrderbookTab(self, graph_area)
         self.future_tab = Window_3(self, graph_area)
 
         # Add tabs to notebook
