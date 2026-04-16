@@ -13,10 +13,11 @@ class Trader:
 
         # Capture to a variable
         self.state = state
+        self.past_trader_data = state.traderData
 
         # Output variables initialising
         self.orders: Dict[Symbol, List[Order]] = dict()
-        self.traderData = ""
+        self.future_trader_data = ""
 
         # The trading logic
         self.emerald()
@@ -167,12 +168,19 @@ class Trader:
         # TOMATO
         TOMATO = "Tomato"
 
+        sorted(self.state.order_depths[TOMATOES].sell_orders.keys())[0]
+        sorted(self.state.order_depths[TOMATOES].buy_orders.keys())[-1]
+        # keys of the dictionary are the prices
+        
+        index = 0
+        
+
         # True price for TOMATO
-        TOMATO_TRUE_PRICE =  
+        TOMATO_TRUE_PRICE =  order_depths[TOMATOES].
 
         # The order book without us
-        TOMATO_STABLE_ASK = 
-        TOMATO_STABLE_BID = 
+        #TOMATO_STABLE_ASK = 
+        #TOMATO_STABLE_BID = 
 
         # Market making
         best_ask = TOMATO_STABLE_ASK
