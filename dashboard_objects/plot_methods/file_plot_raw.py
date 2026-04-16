@@ -1,4 +1,5 @@
 # Functional imports
+import numpy as np
 import pandas as pd
 from tkinter import messagebox
 import re
@@ -9,7 +10,7 @@ from dashboard_objects.variables import *
 if False:
     from dashboard_objects.graph_area import GraphArea
 
-def plot_order_book(plot: "GraphArea",
+def plot_raw_plot(plot: "GraphArea",
                     file_path: str,
                     traded_object: str):
     """
@@ -75,6 +76,13 @@ def process_file(plot: "GraphArea",
     if trade_data.empty:
         print(f"No matching data in {file_path}")
 
+    # Removing midpoints if there isn't actually a bid/ask on that day
+    if "mid_price" in trade_data.columns:
+        no_bid = trade_data["bid_price_1"].isna() | (trade_data["bid_price_1"] == "")
+        no_ask = trade_data["ask_price_1"].isna() | (trade_data["ask_price_1"] == "")
+        trade_data.loc[no_bid, "mid_price"] = np.nan
+        trade_data.loc[no_ask, "mid_price"] = np.nan
+
     # Getting the plotted data saved
     if "prices" in file_path:
         plot.active_orderbook_data = pd.concat([plot.active_orderbook_data, trade_data]).sort_index()
@@ -83,7 +91,7 @@ def process_file(plot: "GraphArea",
 
     return trade_data
 
-def finish_orderbook(plot: "GraphArea",
+def finish_raw_plot(plot: "GraphArea",
                      traded_object: str):
     """
     We run this at the end of plotting all the data we want to see

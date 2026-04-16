@@ -35,21 +35,40 @@ And you can find the wiki containing all of this information from the IMC team h
 
 Like any good data analyst, you need to be able to visualise the data that you have been given
 
-I decided to program my own. 
 You can find it as the "Dashboard.py" file. 
-It takes .csv files from the folder named Data,
-and spits out a visualisation of what's going on. Pretty simple.
 
 ## Features
+
+### Entirely Tkinter OOP
+
+Now, you may call me a rust-bucket for using a python library that hasn't been updated for roughly one or two years (at time of writing in 2026), but this little library packs a powerful punch.
+
+Every single panel, window, button group etcetera is its own object, and you should be able to understand exactly what goes where (if you ignore the calls like self.parent.parent.parent to get from a bottom-level container to a top-level one)
 
 ### Backdata Graph
 
 Able to graph the prices and trades .csv files from IMC Prosperity, with specific ticker selection
 
+Just make sure that the files you wanna graph are in the "Data" folder, and you should be good to go
+
 Key: 
 - Green down triangles are asks (best ask is slightly bigger)
 - Red up triangles are bids (best bid is slightly bigger)
+- Black dots are mid-prices
 - Orange crosses are trades
+
+### Graph Loading
+
+You can choose which files you wanna focus on, and which traded objects you wanna look at in the Data tab
+
+### Orderbook
+
+Live Orderbook display depending on the cursor position on the screen.
+
+Also ability to:
+- Freeze orderbook display
+- Force centering of orderbook display on spread of current cursor (basically means you always see the relevant info)
+- Collapse zero values
 
 # Objects
 

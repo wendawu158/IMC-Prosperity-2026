@@ -1,7 +1,3 @@
-Type all custom objects: Easier to code and maintain
-- Need to type parents and children (children should be auto typed?)
-- Every file needs to import its parents and children
-
 Box to enter to fit to certain timestamp view
 Data tab upgrades
 - rolling average plot option

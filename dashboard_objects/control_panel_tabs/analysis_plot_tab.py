@@ -5,7 +5,7 @@ if False:
     from dashboard_objects.graph_area import GraphArea
 
 
-class Window_3(tk.Frame):
+class AnalysisPlotTab(tk.Frame):
     """
     Awaiting future functionality
     """

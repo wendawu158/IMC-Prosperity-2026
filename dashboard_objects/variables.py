@@ -22,3 +22,9 @@ plot_config = {
     "bid_price_3": ("^", "#00ec64", 6),
     "price": ("X", "#cc5500", 6.5)
 }
+
+bid_prices = ["bid_price_1", "bid_price_2", "bid_price_3"]
+ask_prices = ["ask_price_1", "ask_price_2", "ask_price_3"]
+
+bid_volumes = ["bid_volume_1", "bid_volume_2", "bid_volume_3"]
+ask_volumes = ["ask_volume_1", "ask_volume_2", "ask_volume_3"]
