@@ -2,7 +2,7 @@
 from tkinter import ttk
 from dashboard_objects.control_panel_tabs.data_selection_tab import DataTab
 from dashboard_objects.control_panel_tabs.orderbook_tab import OrderbookTab
-from dashboard_objects.control_panel_tabs.future_tab import Window_3
+from dashboard_objects.control_panel_tabs.analysis_plot_tab import AnalysisPlotTab
 
 # Parent and Sibling imports
 if False:
@@ -24,7 +24,7 @@ class ControlPanel(ttk.Notebook):
         # Initialize tabs
         self.data_tab = DataTab(self, graph_area)
         self.stats_tab = OrderbookTab(self, graph_area)
-        self.future_tab = Window_3(self, graph_area)
+        self.future_tab = AnalysisPlotTab(self, graph_area)
 
         # Add tabs to notebook
         self.add(self.data_tab, text="Data")

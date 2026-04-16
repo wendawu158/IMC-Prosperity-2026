@@ -1,4 +1,5 @@
 # Functional imports
+import numpy as np
 import pandas as pd
 from tkinter import messagebox
 import re
@@ -74,6 +75,13 @@ def process_file(plot: "GraphArea",
     # If we don't have any data that matches
     if trade_data.empty:
         print(f"No matching data in {file_path}")
+
+    # Removing midpoints if there isn't actually a bid/ask on that day
+    if "mid_price" in trade_data.columns:
+        no_bid = trade_data["bid_price_1"].isna() | (trade_data["bid_price_1"] == "")
+        no_ask = trade_data["ask_price_1"].isna() | (trade_data["ask_price_1"] == "")
+        trade_data.loc[no_bid, "mid_price"] = np.nan
+        trade_data.loc[no_ask, "mid_price"] = np.nan
 
     # Getting the plotted data saved
     if "prices" in file_path:

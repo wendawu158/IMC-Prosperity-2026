@@ -138,6 +138,8 @@ class SelectionNotebook(ttk.Notebook):
                         self.file_checks[-1].pack(side=tk.TOP, anchor=tk.NW)
                     else:
                         continue
+            else:
+                continue
 
             # This bit of code is to get the ticker radio buttons up
             df = pd.read_csv(f"Data/{file_name}", sep=";")

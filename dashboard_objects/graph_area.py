@@ -6,7 +6,7 @@ from matplotlib.backend_bases import key_press_handler
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.widgets import Cursor
 import matplotlib.ticker as ticker
-from typing import List
+from typing import List, Any
 
 # Child imports
 from dashboard_objects.plot_methods.file_plot_raw import plot_raw_plot, finish_raw_plot
@@ -50,7 +50,7 @@ class GraphArea(tk.Frame):
         self.canvas.mpl_connect('motion_notify_event', self.on_mouse_motion)
 
         # Allow objects to subscribe to mouse movement
-        self.mouse_motion_subscribers: List[callable(tk.Event)] = [self.cursor_display]
+        self.mouse_motion_subscribers: List[Any] = [self.cursor_display]
 
         # Track active data for the order book visualizer
         self.active_orderbook_data: pd.DataFrame = pd.DataFrame()
@@ -145,8 +145,24 @@ class GraphArea(tk.Frame):
             spacing = 5
         elif view_width <= 200:
             spacing = 10
-        else:
+        elif view_width <= 400:
             spacing = 20
+        elif view_width <= 1000:
+            spacing = 50
+        elif view_width <= 2000:
+            spacing = 100
+        elif view_width <= 4000:
+            spacing = 200
+        elif view_width <= 10000:
+            spacing = 500
+        elif view_width <= 20000:
+            spacing = 1000
+        elif view_width <= 40000:
+            spacing = 2000
+        elif view_width <= 100000:
+            spacing = 5000
+        else:
+            spacing = 10000
 
         # Apply the new scale
         event.yaxis.set_major_locator(ticker.MultipleLocator(spacing))
@@ -175,6 +191,7 @@ class GraphArea(tk.Frame):
 
         # Removing the saved data
         self.active_orderbook_data = pd.DataFrame()
+        self.active_trades_data = pd.DataFrame()
 
     def annotate(self) -> None:
         """

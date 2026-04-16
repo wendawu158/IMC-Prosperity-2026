@@ -1,0 +1,17 @@
+---
+title: "Tomatoes"
+author: "Wenda Wu & Abiola Abidoye"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r imports}
+
+```
+
+
+```{r initialisation}
+df = read.csv("../Data")
+```
+
+## Auto 
