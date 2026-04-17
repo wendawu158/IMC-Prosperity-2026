@@ -14,14 +14,10 @@ class Trader:
 
         # Capture to a variable
         self.state = state
-        self.past_trader_data: Dict[str] = {}
-
-        if state.traderData != "":
-            self.past_trader_data = pickle.loads(self.state.traderData)
 
         # Output variables initialising
         self.orders: Dict[Symbol, List[Order]] = dict()
-        self.future_trader_data = {}
+        self.traderData = ""
 
         # The trading logic
         self.emerald()
@@ -169,47 +165,22 @@ class Trader:
         bids_tomato = self.state.order_depths[TOMATOES].buy_orders
         asks_tomato = self.state.order_depths[TOMATOES].sell_orders
 
-        # Previous best non-outlier bid and ask for tomatoes
-        previous_best_stable_ask = past_data.get("best ask", -1)
-        previous_best_stable_bid = past_data.get("best bid", -1)
-        previous_best_stable_midpoint = (previous_best_stable_ask + previous_best_stable_bid)/2
+        # TOMATO
+        TOMATO = "Tomato"
 
-        # Different types of bids (they may not necessarily be different values)
-        best_ask = sorted(self.state.order_depths[TOMATOES].sell_orders.keys())[0]
-        best_bid = sorted(self.state.order_depths[TOMATOES].buy_orders.keys())[-1]
+        # True price for TOMATO
+        TOMATO_TRUE_PRICE =  
 
-        best_fair_ask = best_ask
-        best_fair_bid = best_bid
+        # The order book without us
+        TOMATO_STABLE_ASK = 
+        TOMATO_STABLE_BID = 
 
-        best_stable_ask = best_ask
-        best_stable_bid = best_bid
+        # Market making
+        best_ask = TOMATO_STABLE_ASK
+        best_bid = TOMATO_STABLE_BID
 
-        if best_fair_ask < previous_best_stable_midpoint:
-            best_fair_ask = sorted(self.state.order_depths[TOMATOES].sell_orders.keys())[1]
-            if best_fair_ask < previous_best_stable_midpoint:
-                best_fair_ask = sorted(self.state.order_depths[TOMATOES].sell_orders.keys())[2]
-
-        if best_fair_bid > previous_best_stable_midpoint:
-            best_fair_bid = sorted(self.state.order_depths[TOMATOES].buy_orders.keys())[-2]
-            if best_fair_bid > previous_best_stable_midpoint:
-                best_fair_bid = sorted(self.state.order_depths[TOMATOES].buy_orders.keys())[-3]
-
-        if abs(best_stable_ask - previous_best_stable_ask) > 1:
-            best_stable_ask = sorted(self.state.order_depths[TOMATOES].sell_orders.keys())[1]
-            if abs(best_stable_ask - previous_best_stable_ask) > 1:
-                best_stable_ask = sorted(self.state.order_depths[TOMATOES].sell_orders.keys())[2]
-                if abs(best_stable_ask - previous_best_stable_ask) > 1:
-                    best_stable_ask = previous_best_stable_ask
-
-        if abs(best_stable_bid - previous_best_stable_bid) > 1:
-            best_stable_bid = sorted(self.state.order_depths[TOMATOES].buy_orders.keys())[-2]
-            if abs(best_stable_bid - previous_best_stable_bid) > 1:
-                best_stable_bid = sorted(self.state.order_depths[TOMATOES].buy_orders.keys())[-3]
-                if abs(best_stable_bid - previous_best_stable_bid) > 1:
-                    best_stable_bid = previous_best_stable_bid
-
-        # The number of tomatoes that we hold
-        position_tomatoes = 0
+        # The number of emeralds that we hold
+        position_tomato = 0
 
         # How many tomatoes are we holding?
         try:
