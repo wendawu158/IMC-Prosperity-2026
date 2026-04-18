@@ -6,7 +6,7 @@ from datamodel import *
 class Trader:
 
     def bid(self):
-        return 0
+        pass
 
     def run(self, state: TradingState):
         """
