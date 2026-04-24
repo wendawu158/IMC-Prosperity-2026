@@ -151,16 +151,13 @@ class Trader:
         Trading algorithm specifically for intarian_pepper_root
 
         INTARIAN_PEPPER_ROOTS are a product that climbs slowly over time
-        Their true price rises by around
-        However, sometimes we can see traders taking exit liquidity
+        Their true price rises by around 1 per 1000 in timestamp
 
         Strategy
-        Undercut other market makers by 1 unit, offering at just above and below their bid/ask
-        Balance market making based on position
-        Always take bids/asks that cross the shm
+        Literally just buy and hold
 
         Notes
-        This is similar to the EMERALDS in the tutorial, but with some extra drift
+        This is similar to gold irl
         """
 
         if self.state.position.get("INTARIAN_PEPPER_ROOT", 0) < 80:
