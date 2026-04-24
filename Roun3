@@ -1,0 +1,31 @@
+from typing import Any
+
+import jsonpickle
+from datamodel import *
+class Trader:
+
+    def bid(self):
+        pass
+
+    def run(self, state: TradingState):
+        """
+        Overarching algorithm
+        """
+
+        # Capture to a variable
+        self.state = state
+        self.past_trader_data: Dict[str, Dict[str, Any]] = {}
+
+        if state.traderData != "":
+            self.past_trader_data = jsonpickle.decode(self.state.traderData)
+
+        # Output variables initialising
+        self.orders: Dict[Symbol, List[Order]] = dict()
+        self.future_trader_data = {}
+
+        # The trading logic
+        
+        self.emerald(VELVETFRUIT_EXTRACT)
+        self.tomato()
+
+        return self.orders, 0, jsonpickle.encode(self.future_trader_data)
