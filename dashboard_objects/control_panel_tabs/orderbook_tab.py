@@ -208,6 +208,9 @@ class OrderbookDisplay(tk.Frame):
 
         # Get data
         data = self.graph_area.active_orderbook_data
+        if data.empty:
+            return
+
         self.min_price = int(data[bid_prices].min().min())
         self.max_price = int(data[ask_prices].max().max())
 
